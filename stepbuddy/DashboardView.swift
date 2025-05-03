@@ -21,7 +21,7 @@ enum HealthMetricContent: CaseIterable, Identifiable {
     }
 }
 
-struct ContentView: View {
+struct DashboardView: View {
     
     @State private var selectedStat: HealthMetricContent = .steps
     var isSteps: Bool { selectedStat == .steps }
@@ -70,12 +70,12 @@ struct ContentView: View {
             }.padding()
                 .navigationTitle("Dashboard")
                 .navigationDestination(for: HealthMetricContent.self) { metric in
-                    Text(metric.title)
+                    HealthDataListView(metric: metric)
                 }
         }.tint(isSteps ? .pink : .indigo)
     }
 }
 
 #Preview {
-    ContentView()
+    DashboardView()
 }
