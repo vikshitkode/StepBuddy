@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HealthDataListView: View {
     
-    var metric: HealthMetricContent
+    var metric: HealthMetricContext
     @State private var isShowingAddData: Bool = false
     @State private var addDataDate: Date = Date()
     @State private var valueToAdd: String = ""
