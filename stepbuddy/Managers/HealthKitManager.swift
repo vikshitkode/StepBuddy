@@ -68,10 +68,10 @@ class HealthKitManager {
     }
     
     
-//    func requestAuthorization() async throws {
-//        try await store.requestAuthorization(toShare: types, read: types)
-//    }
-//    
+    func requestAuthorization() async throws {
+        try await store.requestAuthorization(toShare: types, read: types)
+    }
+    
 //    func addSimulatorData() async {
 //        var mockSamples: [HKQuantitySample] = []
 //        
