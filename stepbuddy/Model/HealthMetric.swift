@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct HealthMetric: Identifiable {
+struct HealthMetric {
     
-    var id = UUID()
+    var identifier = UUID()
     var date: Date
     var value: Double
     
