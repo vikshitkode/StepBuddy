@@ -12,7 +12,9 @@ struct HealthKitPermissionPrimingView: View {
     
     @Environment(HealthKitManager.self) private var hkManager
     @Environment(\.dismiss) private var dismiss
+    
     @State private var isShowingHealthKitPermissions = false
+    
     @Binding var hasSeen: Bool
     
     var description: String = """
@@ -57,6 +59,8 @@ struct HealthKitPermissionPrimingView: View {
             .onAppear {
                 hasSeen = true
             }
+        
+        /// Adding for HealthKit Data Access here
             .healthDataAccessRequest(
                 store: hkManager.store,
                 shareTypes: hkManager.types,
@@ -66,6 +70,7 @@ struct HealthKitPermissionPrimingView: View {
                     case .success(_):
                         dismiss()
                     case .failure(_):
+                        // need to handle this case
                         dismiss()
                     }
                 }
@@ -73,5 +78,6 @@ struct HealthKitPermissionPrimingView: View {
 }
 
 #Preview {
-    HealthKitPermissionPrimingView(hasSeen: .constant(true)).environment(HealthKitManager())
+    HealthKitPermissionPrimingView(hasSeen: .constant(true))
+        .environment(HealthKitManager())
 }
