@@ -19,6 +19,8 @@ class HealthKitManager {
     var stepData: [HealthMetric] = []
     var weightData: [HealthMetric] = []
     
+    
+    /// Fetching the Step Count of the User
     func fetchStepCount() async {
         let calender = Calendar.current
         let today = calender.startOfDay(for: .now)
@@ -43,6 +45,8 @@ class HealthKitManager {
         }
     }
     
+    
+    /// Fecthing the Weights of the User
     func fetchWeights() async {
         let calender = Calendar.current
         let today = calender.startOfDay(for: .now)
@@ -67,11 +71,13 @@ class HealthKitManager {
         }
     }
     
-    
+    /// Req auth to Read and Write Data
     func requestAuthorization() async throws {
         try await store.requestAuthorization(toShare: types, read: types)
     }
     
+    
+    /// Sample Mock data to populate the Health App
 //    func addSimulatorData() async {
 //        var mockSamples: [HKQuantitySample] = []
 //        
