@@ -76,8 +76,8 @@ struct StepBarChart: View {
         let selected = selectedHealthMetric
 
         Chart {
-            if let selected {
-                RuleMark(x: .value("Selected Metric", selected.date, unit: .day))
+            if let selectedHealthMetric {
+                RuleMark(x: .value("Selected Metric", selectedHealthMetric.date, unit: .day))
                     .foregroundStyle(Color.secondary.opacity(0.3))
                     .offset(y: -10)
                     .annotation(
@@ -124,6 +124,6 @@ struct StepBarChart: View {
 }
 
 #Preview {
-    StepBarChart(selectedStat: .steps, chartData: HealthMetric.mockData)
+    StepBarChart(selectedStat: .steps, chartData: MockData.steps)
 }
 
