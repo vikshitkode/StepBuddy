@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import StoreKit
 
 enum HealthMetricContext: CaseIterable, Identifiable {
     case steps, weight
@@ -52,6 +53,12 @@ struct DashboardView: View {
                         WeightLineChart(selectedStat: selectedStat, chartData: hkManager.weightData)
                         WeightDiffBarChart(chartData: ChartMath.avgDailyWeightDiff(for: hkManager.weightDiffData))
                     }
+                    /// Review for the App
+                    Button("Leave us a Review") {
+                        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                            AppStore.requestReview(in: scene)
+                        }
+                    }.buttonStyle(.borderedProminent).foregroundStyle(Color.white)
                     
                 }
                 
