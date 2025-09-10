@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct WightDiffBarChart: View {
+struct WeightDiffBarChart: View {
     @State private var rawSelectedDate: Date?
 
     var chartData: [WeekDayChartData]
@@ -106,5 +106,5 @@ struct WightDiffBarChart: View {
 }
 
 #Preview {
-    WightDiffBarChart(chartData: MockData.weightDiffs)
+    WeightDiffBarChart(chartData: MockData.weightDiffs)
 }
