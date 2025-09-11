@@ -18,6 +18,7 @@ class HealthKitManager {
     
     var stepData: [HealthMetric] = []
     var weightData: [HealthMetric] = []
+    var weightDiffData: [HealthMetric] = []
     
     
     /// Fetching the Step Count of the User
@@ -71,9 +72,48 @@ class HealthKitManager {
         }
     }
     
+    /// Fecthing the Weights of the User
+    func fetchWeightsForDifferentials() async {
+        let calender = Calendar.current
+        let today = calender.startOfDay(for: .now)
+        let endDate = calender.date(byAdding: .day, value: 1, to: today)!
+        let startDate = calender.date(byAdding: .day, value: -29, to: endDate)
+        
+        let queryPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+        let samplePredicate = HKSamplePredicate.quantitySample(type: HKQuantityType(.bodyMass), predicate: queryPredicate)
+        let weightQuery = HKStatisticsCollectionQueryDescriptor(predicate: samplePredicate,
+                                                               options: .mostRecent,
+                                                               anchorDate: endDate,
+                                                               intervalComponents: .init(day: 1))
+        
+        do {
+            let weights = try await weightQuery.result(for: store)
+            
+            weightDiffData = weights.statistics().map {
+                .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
+            }
+        } catch {
+            
+        }
+    }
+    
     /// Req auth to Read and Write Data
     func requestAuthorization() async throws {
         try await store.requestAuthorization(toShare: types, read: types)
+    }
+    
+    /// Function to write StepData into HealthKit
+    func addStepData(for date: Date, value: Double) async {
+        let stepQuantity = HKQuantity(unit: .count(), doubleValue: value)
+        let stepSample = HKQuantitySample(type: HKQuantityType(.stepCount), quantity: stepQuantity, start: date, end: date)
+        try! await store.save(stepSample)
+    }
+    
+    /// Function to write weightData into HealthKit
+    func addWeightData(for date: Date, value: Double) async {
+        let weightQuantity = HKQuantity(unit: .pound(), doubleValue: value)
+        let weightSample = HKQuantitySample(type: HKQuantityType(.bodyMass), quantity: weightQuantity, start: date, end: date)
+        try! await store.save(weightSample)
     }
     
     

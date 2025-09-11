@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import StoreKit
 
 enum HealthMetricContext: CaseIterable, Identifiable {
     case steps, weight
@@ -30,6 +31,7 @@ struct DashboardView: View {
     
     @State private var isShowingPermissionPrimingSheet: Bool = false
     @State private var selectedStat: HealthMetricContext = .steps
+    @State private  var isShowingBMISheet: Bool = false
     
     var isSteps: Bool { selectedStat == .steps }
     
@@ -44,15 +46,39 @@ struct DashboardView: View {
                         }
                     }.pickerStyle(.segmented)
                     
-                    StepBarChart(selectedStat: selectedStat, chartData: hkManager.stepData)
+                    switch selectedStat {
+                    case .steps:
+                        StepBarChart(selectedStat: selectedStat, chartData: hkManager.stepData)
+                        StepPieChart(chartData: ChartMath.averageWeekdayCount(for: hkManager.stepData))
+                    case .weight:
+                        WeightLineChart(selectedStat: selectedStat, chartData: hkManager.weightData)
+                        WeightDiffBarChart(chartData: ChartMath.avgDailyWeightDiff(for: hkManager.weightDiffData))
+                        
+                        VStack(spacing: 30){
+                            /// BMI Calculation
+                            Button("Calculate BMI") {
+                                isShowingBMISheet = true
+                            }
+                            .buttonStyle(.bordered)
+                            .padding(.top, 8)
+                            
+                            /// Review for the App
+                            Button("Leave us a Review!") {
+                                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                                    AppStore.requestReview(in: scene)
+                                }
+                            }.foregroundStyle(.indigo)
+                        }
+                    }
                     
-                    StepPieChart(chartData: ChartMath.averageWeekdayCount(for: hkManager.stepData))
                 }
                 
             }
             .padding()
             .task {
                 await hkManager.fetchStepCount()
+                await hkManager.fetchWeights()
+                await hkManager.fetchWeightsForDifferentials()
                 ChartMath.averageWeekdayCount(for: hkManager.stepData)
 //                await hkManager.addSimulatorData()
                 isShowingPermissionPrimingSheet = !hasSeenPermissionPriming
@@ -61,12 +87,12 @@ struct DashboardView: View {
             .navigationDestination(for: HealthMetricContext.self) { metric in
                 HealthDataListView(metric: metric)
             }
-            .sheet(isPresented: $isShowingPermissionPrimingSheet, onDismiss: {
-                // fetch health data
-            }, content: {
+            .sheet(isPresented: $isShowingPermissionPrimingSheet) {
                 HealthKitPermissionPrimingView(hasSeen: $hasSeenPermissionPriming)
             }
-            )
+            .sheet(isPresented: $isShowingBMISheet) {
+                BMICalculatorSheet()
+            }
             
         }.tint(isSteps ? .pink : .indigo)
     }
