@@ -11,6 +11,8 @@ import Charts
 struct StepPieChart: View {
     
     @State private var rawSelectedChartValue: Double? = nil
+    @State private var isInteracting: Bool = false
+
     
     var selectedWeekDay: WeekDayChartData? {
         guard let rawSelectedChartValue, !chartData.isEmpty else { return nil }
@@ -41,6 +43,16 @@ struct StepPieChart: View {
                     .foregroundColor(.secondary)
                     .frame(height: 240)
             } else {
+                
+                if !isInteracting {
+                        Text("Touch a slice to see details")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.bottom, 4)
+                            .transition(.opacity)
+                }
+                
                 Chart {
                     ForEach(chartData) { weekday in
                         SectorMark(
@@ -60,6 +72,9 @@ struct StepPieChart: View {
                 }
                 .chartAngleSelection(value: $rawSelectedChartValue.animation(.easeInOut))
                 .frame(height: 240)
+                .onChange(of: rawSelectedChartValue) { oldValue, newValue in
+                    if newValue != nil { isInteracting = true } else { isInteracting = false }
+                }
                 .chartBackground { proxy in
                     GeometryReader { geo in
                         if let plotFrame = proxy.plotFrame {

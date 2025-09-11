@@ -102,6 +102,20 @@ class HealthKitManager {
         try await store.requestAuthorization(toShare: types, read: types)
     }
     
+    /// Function to write StepData into HealthKit
+    func addStepData(for date: Date, value: Double) async {
+        let stepQuantity = HKQuantity(unit: .count(), doubleValue: value)
+        let stepSample = HKQuantitySample(type: HKQuantityType(.stepCount), quantity: stepQuantity, start: date, end: date)
+        try! await store.save(stepSample)
+    }
+    
+    /// Function to write weightData into HealthKit
+    func addWeightData(for date: Date, value: Double) async {
+        let weightQuantity = HKQuantity(unit: .pound(), doubleValue: value)
+        let weightSample = HKQuantitySample(type: HKQuantityType(.bodyMass), quantity: weightQuantity, start: date, end: date)
+        try! await store.save(weightSample)
+    }
+    
     
     /// Sample Mock data to populate the Health App
 //    func addSimulatorData() async {
