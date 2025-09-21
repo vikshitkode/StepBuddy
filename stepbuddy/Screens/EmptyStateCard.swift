@@ -8,11 +8,24 @@
 import SwiftUI
 
 struct EmptyStateCard: View {
+    var title: String
+    var message: String
+    var color: Color
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(spacing: 10) {
+            Text(title).font(.headline).foregroundStyle(color)
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.tertiarySystemBackground)))
     }
 }
 
 #Preview {
-    EmptyStateCard()
+    EmptyStateCard(title: "Empty State", message: "There is nothing here.", color: .indigo)
 }

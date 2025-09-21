@@ -15,11 +15,9 @@ struct WeightLineChart: View {
     var selectedStat: HealthMetricContext
     var chartData: [HealthMetric]
     
-    var selectedHealthMetric: HealthMetric? {
-        guard let rawSelectedDate else { return nil }
-        return chartData.first {
-            Calendar.current.isDate(rawSelectedDate, inSameDayAs: $0.date)
-        }
+    private var selectedHealthMetric: HealthMetric? {
+            guard !chartData.isEmpty, let rawSelectedDate else { return nil }
+            return chartData.first { Calendar.current.isDate(rawSelectedDate, inSameDayAs: $0.date) }
     }
     
     var minValue: Double {
@@ -44,37 +42,51 @@ struct WeightLineChart: View {
             .foregroundStyle(.secondary)
             .padding(.bottom, 12)
             
-            Chart{
-                if let selectedHealthMetric {
-                    RuleMark(x: .value("Selected Metric", selectedHealthMetric.date, unit: .day))
-                        .foregroundStyle(Color.secondary.opacity(0.3))
-                        .offset(y: -10)
-                        .annotation(
-                            position: .top,
-                            spacing: 0,
-                            overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
-                        ) { annotationView }
-                }
-                RuleMark(y: .value("Goal", 155))
-                    .foregroundStyle(.mint)
-                    .lineStyle(.init(lineWidth: 1, dash: [5]))
-                
-                ForEach(chartData, id: \.identifier) { weight in
+            if chartData.isEmpty {
+                EmptyStateCard(
+                    title: "No Weight Data",
+                    message: "Add weight entries in this App or enable Apple Health access to see your trends here.", color: .indigo
+                )
+                .frame(maxWidth: .infinity, minHeight: 150)
+            } else {
+                Chart {
+                    if let selectedHealthMetric {
+                        RuleMark(x: .value("Selected Metric", selectedHealthMetric.date, unit: .day))
+                            .foregroundStyle(Color.secondary.opacity(0.3))
+                            .offset(y: -10)
+                            .annotation(
+                                position: .top,
+                                spacing: 0,
+                                overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
+                            ) { annotationView }
+                    }
                     
-                    AreaMark(x: .value("Day", weight.date, unit: .day),
-                             yStart: .value("Min Value", weight.value),
-                             yEnd: .value("Min Value", minValue)
-                    )
-                    .foregroundStyle(Gradient(colors: [.indigo.opacity(0.5), .clear]))
+                    RuleMark(y: .value("Goal", 155))
+                        .foregroundStyle(.mint)
+                        .lineStyle(.init(lineWidth: 1, dash: [5]))
                     
-                    LineMark(
-                        x: .value("Day", weight.date, unit: .day),
-                        y: .value("Value", weight.value)
-                    ).foregroundStyle(.indigo).interpolationMethod(.catmullRom).symbol(.circle)
+                    // If your HealthMetric has `identifier` use that, otherwise use \.date or \.id
+                    ForEach(chartData, id: \.identifier) { weight in
+                        AreaMark(
+                            x: .value("Day", weight.date, unit: .day),
+                            yStart: .value("Value", weight.value),
+                            yEnd: .value("Minimum", minValue)
+                        )
+                        .foregroundStyle(Gradient(colors: [.indigo.opacity(0.5), .clear]))
+                        
+                        LineMark(
+                            x: .value("Day", weight.date, unit: .day),
+                            y: .value("Value", weight.value)
+                        )
+                        .foregroundStyle(.indigo)
+                        .interpolationMethod(.catmullRom)
+                        .symbol(.circle)
+                    }
                 }
+                .frame(height: 150)
+                .chartXSelection(value: $rawSelectedDate)
+                .chartYScale(domain: .automatic(includesZero: false))
             }
-            .frame(height: 150).chartXSelection(value: $rawSelectedDate)
-            .chartYScale(domain: .automatic(includesZero: false))
         }
         .padding()
         .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemBackground)))

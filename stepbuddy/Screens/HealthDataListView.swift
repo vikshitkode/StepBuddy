@@ -39,38 +39,88 @@ struct HealthDataListView: View {
     }
     
     var addDataView: some View {
-        NavigationStack {
+        @State var showInvalidAlert = false
+
+        // Locale-aware parser (handles "," or ".")
+        func parseDouble(_ s: String) -> Double? {
+            let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+            let f = NumberFormatter()
+            f.locale = .current
+            f.numberStyle = .decimal
+            return f.number(from: trimmed)?.doubleValue
+        }
+
+        // Validation rules (adjust ranges if you like)
+        var parsedValue: Double? {
+            parseDouble(valueToAdd)
+        }
+        var isValid: Bool {
+            guard let v = parsedValue else { return false }
+            switch metric {
+            case .steps:
+                return v >= 0 && v <= 200_000 && v.rounded(.towardZero) == v // integer steps
+            case .weight:
+                return v > 0 && v < 635 // assume kg stored internally; tweak if using lb
+            }
+        }
+
+        return NavigationStack {
             Form {
                 DatePicker("Date", selection: $addDataDate, displayedComponents: .date)
                 HStack {
                     Text(metric.title)
                     Spacer()
-                    TextField("Value", text: $valueToAdd).multilineTextAlignment(.trailing).frame(width: 140).keyboardType(metric == .steps ? .numberPad : .decimalPad)
+                    TextField("Value", text: $valueToAdd)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 140)
+                        .keyboardType(metric == .steps ? .numberPad : .decimalPad)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
                 }
-            }.navigationTitle(metric.title).navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Add Data"){
-                            Task{
-                                if metric == .steps {
-                                    await hkManager.addStepData(for: addDataDate, value: Double(valueToAdd)!)
-                                    await hkManager.fetchStepCount()
-                                    isShowingAddData = false
-                                } else {
-                                    await hkManager.addWeightData(for: addDataDate, value: Double(valueToAdd)!)
-                                    await hkManager.fetchWeights()
-                                    await hkManager.fetchWeightsForDifferentials()
-                                    isShowingAddData = false
-                                }
-                            }
+
+                if !valueToAdd.isEmpty && !isValid {
+                    Text(metric == .steps
+                         ? "Enter a whole number between 0 and 200,000."
+                         : "Enter a positive number.")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                }
+            }
+            .navigationTitle(metric.title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Dismiss") { isShowingAddData = false }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Add Data") {
+                        guard let value = parsedValue, isValid else {
+                            showInvalidAlert = true
+                            return
                         }
-                    }
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Dismiss") {
+                        Task {
+                            if metric == .steps {
+                                await hkManager.addStepData(for: addDataDate, value: value.rounded())
+                                await hkManager.fetchStepCount()
+                            } else {
+                                await hkManager.addWeightData(for: addDataDate, value: value)
+                                await hkManager.fetchWeights()
+                                await hkManager.fetchWeightsForDifferentials()
+                            }
                             isShowingAddData = false
                         }
                     }
+                    .disabled(!isValid)
                 }
+            }
+            .alert("Invalid value", isPresented: $showInvalidAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(metric == .steps
+                     ? "Please enter a whole number of steps."
+                     : "Please enter a positive number for weight.")
+            }
         }
     }
 }
