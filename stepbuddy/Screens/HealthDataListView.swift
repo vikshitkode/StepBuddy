@@ -59,9 +59,9 @@ struct HealthDataListView: View {
             guard let v = parsedValue else { return false }
             switch metric {
             case .steps:
-                return v >= 0 && v <= 200_000 && v.rounded(.towardZero) == v // integer steps
+                return v >= 1 && v <= 200_000 && v.rounded(.towardZero) == v
             case .weight:
-                return v > 0 && v < 635 // assume kg stored internally; tweak if using lb
+                return v > 1 && v < 500
             }
         }
 
@@ -81,8 +81,8 @@ struct HealthDataListView: View {
 
                 if !valueToAdd.isEmpty && !isValid {
                     Text(metric == .steps
-                         ? "Enter a whole number between 0 and 200,000."
-                         : "Enter a positive number.")
+                         ? "Enter a whole number between 1 and 200,000."
+                         : "Enter a positive number betwwen 1 and 500 lbs")
                     .font(.footnote)
                     .foregroundStyle(.red)
                 }
