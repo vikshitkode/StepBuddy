@@ -21,20 +21,26 @@ struct HealthDataListView: View {
     }
     
     var body: some View {
-        List(listData.reversed(), id: \.date) { data in
-            HStack {
-                Text(data.date, format: .dateTime.month().day().year())
-                Spacer()
-                Text(data.value, format: .number.precision(.fractionLength(metric == .steps ? 0 : 1)))
+        List {
+            Section(header:
+                        Text("Only the last 28 days are shown on this screen.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.top, 4)
+            ) {
+                ForEach(listData.reversed(), id: \.date) { data in
+                    HStack {
+                        Text(data.date, format: .dateTime.month().day().year())
+                        Spacer()
+                        Text(data.value, format: .number.precision(.fractionLength(metric == .steps ? 0 : 1)))
+                    }
+                }
             }
         }
         .navigationTitle(metric.title)
-        .sheet(isPresented: $isShowingAddData) {
-            addDataView
-        }.toolbar {
-            Button("Add Data", systemImage: "plus") {
-                isShowingAddData = true
-            }
+        .sheet(isPresented: $isShowingAddData) { addDataView }
+        .toolbar {
+            Button("Add Data", systemImage: "plus") { isShowingAddData = true }
         }
     }
     
@@ -67,7 +73,7 @@ struct HealthDataListView: View {
 
         return NavigationStack {
             Form {
-                DatePicker("Date", selection: $addDataDate, displayedComponents: .date)
+                DatePicker("Date", selection: $addDataDate, in: ...Date(), displayedComponents: .date)
                 HStack {
                     Text(metric.title)
                     Spacer()
