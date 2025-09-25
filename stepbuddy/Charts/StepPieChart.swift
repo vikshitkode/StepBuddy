@@ -38,10 +38,11 @@ struct StepPieChart: View {
             .padding(.bottom, 12)
             
             if chartData.isEmpty {
-                Text("No data available")
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-                    .frame(height: 240)
+                EmptyStateCard(
+                    title: "No Step Data",
+                    message: "Add Step entries in this App or enable Apple Health access to see your trends here.", color: .pink
+                )
+                .frame(maxWidth: .infinity, minHeight: 150)
             } else {
                 
                 if !isInteracting {

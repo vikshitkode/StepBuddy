@@ -61,25 +61,33 @@ struct WeightDiffBarChart: View {
     @ViewBuilder
     private var chartView: some View {
         
-        Chart {
-            if let selectedData {
-                RuleMark(x: .value("Selected Data", selectedData.date, unit: .day))
-                    .foregroundStyle(Color.secondary.opacity(0.3))
-                    .offset(y: -10)
-                    .annotation(
-                        position: .top,
-                        spacing: 0,
-                        overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
-                    ) { annotationView }
-            }
+        if chartData.isEmpty {
+            EmptyStateCard(
+                title: "No Weight Data",
+                message: "Add weight entries in this App or enable Apple Health access to see your trends here.", color: .indigo
+            )
+            .frame(maxWidth: .infinity, minHeight: 150)
+        } else {
+            Chart {
+                if let selectedData {
+                    RuleMark(x: .value("Selected Data", selectedData.date, unit: .day))
+                        .foregroundStyle(Color.secondary.opacity(0.3))
+                        .offset(y: -10)
+                        .annotation(
+                            position: .top,
+                            spacing: 0,
+                            overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
+                        ) { annotationView }
+                }
 
 
-            ForEach(chartData, id: \.date) { weightdiff in
-                BarMark(
-                    x: .value("Date", weightdiff.date, unit: .day),
-                    y: .value("Weights", weightdiff.value)
-                )
-                .foregroundStyle(weightdiff.value >= 0 ? Color.indigo.gradient : Color.mint.gradient)
+                ForEach(chartData, id: \.date) { weightdiff in
+                    BarMark(
+                        x: .value("Date", weightdiff.date, unit: .day),
+                        y: .value("Weights", weightdiff.value)
+                    )
+                    .foregroundStyle(weightdiff.value >= 0 ? Color.indigo.gradient : Color.mint.gradient)
+                }
             }
         }
     }

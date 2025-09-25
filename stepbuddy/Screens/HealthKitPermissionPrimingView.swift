@@ -24,14 +24,7 @@ struct HealthKitPermissionPrimingView: View {
  """
     
     var body: some View {
-        VStack(spacing: 130){
-            ZStack{
-                Image(.heartBeat)
-                    .resizable()
-                    .frame(width: 300, height: 180)
-                    .opacity(0.1).padding()
-                    .offset(x: 60, y: -95)
-                
+        VStack(spacing: 50){
                 VStack(alignment: .leading, spacing: 10){
                     
                     Image(.appleHealth).resizable()
@@ -46,13 +39,16 @@ struct HealthKitPermissionPrimingView: View {
                     Text(description)
                         .foregroundStyle(.secondary)
                 }
-            }
             
-            Button("Connect Apple Health"){
-                isShowingHealthKitPermissions = true
+            VStack(spacing: 20){
+                Button("Continue"){
+                    isShowingHealthKitPermissions = true
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.pink)
+                
+                Button("Not now") { dismiss() }
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.pink)
 
         }.padding(30)
             .interactiveDismissDisabled()

@@ -75,29 +75,37 @@ struct StepBarChart: View {
     private var chartView: some View {
         let selected = selectedHealthMetric
 
-        Chart {
-            if let selectedHealthMetric {
-                RuleMark(x: .value("Selected Metric", selectedHealthMetric.date, unit: .day))
-                    .foregroundStyle(Color.secondary.opacity(0.3))
-                    .offset(y: -10)
-                    .annotation(
-                        position: .top,
-                        spacing: 0,
-                        overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
-                    ) { annotationView }
-            }
+        if chartData.isEmpty {
+            EmptyStateCard(
+                title: "No Step Data",
+                message: "Add Step entries in this App or enable Apple Health access to see your trends here.", color: .pink
+            )
+            .frame(maxWidth: .infinity, minHeight: 150)
+        } else {
+            Chart {
+                if let selectedHealthMetric {
+                    RuleMark(x: .value("Selected Metric", selectedHealthMetric.date, unit: .day))
+                        .foregroundStyle(Color.secondary.opacity(0.3))
+                        .offset(y: -10)
+                        .annotation(
+                            position: .top,
+                            spacing: 0,
+                            overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
+                        ) { annotationView }
+                }
 
-            RuleMark(y: .value("Average", avgStepCount))
-                .foregroundStyle(Color.secondary)
-                .lineStyle(.init(lineWidth: 1, dash: [5]))
+                RuleMark(y: .value("Average", avgStepCount))
+                    .foregroundStyle(Color.secondary)
+                    .lineStyle(.init(lineWidth: 1, dash: [5]))
 
-            ForEach(chartData, id: \.date) { steps in
-                BarMark(
-                    x: .value("Date", steps.date, unit: .day),
-                    y: .value("Steps", steps.value)
-                )
-                .foregroundStyle(Color.pink.gradient)
-                .opacity(rawSelectedDate == nil || steps.date == selected?.date ? 1.0 : 0.3)
+                ForEach(chartData, id: \.date) { steps in
+                    BarMark(
+                        x: .value("Date", steps.date, unit: .day),
+                        y: .value("Steps", steps.value)
+                    )
+                    .foregroundStyle(Color.pink.gradient)
+                    .opacity(rawSelectedDate == nil || steps.date == selected?.date ? 1.0 : 0.3)
+                }
             }
         }
     }
