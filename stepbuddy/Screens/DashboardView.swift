@@ -35,11 +35,28 @@ struct DashboardView: View {
     
     var isSteps: Bool { selectedStat == .steps }
     
+    var backgroundColor: Color {
+        selectedStat == .steps ? .pink : .indigo
+    }
+    
+    var customGradientColor: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(red: 1.0, green: 0.70, blue: 0.20),
+                Color(red: 0.99, green: 0.30, blue: 0.50),
+                Color(red: 0.32, green: 0.57, blue: 1.0),
+                Color(red: 0.30, green: 0.80, blue: 0.90)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+    
     var body: some View {
         NavigationStack {
             ScrollView {
                 
-                VStack {
+                VStack(spacing: 25){
                     Picker("Selected Stats", selection: $selectedStat) {
                         ForEach(HealthMetricContext.allCases) {
                             Text($0.title)
@@ -71,10 +88,10 @@ struct DashboardView: View {
                         }
                     }
                     
-                }
+                }.padding()
                 
             }
-            .padding()
+            
             .task {
                 await hkManager.fetchStepCount()
                 await hkManager.fetchWeights()
@@ -84,6 +101,25 @@ struct DashboardView: View {
                 isShowingPermissionPrimingSheet = !hasSeenPermissionPriming
             }
             .navigationTitle("Dashboard")
+            .toolbar {
+                ToolbarItem {
+                    customGradientColor
+                    .frame(width: 24, height: 24)
+                    .mask {
+                        Image(systemName: "apple.intelligence")
+                            .resizable()
+                            .scaledToFit()
+                    }
+                }
+            }
+            .toolbarTitleDisplayMode(.inlineLarge)
+            .background(
+                LinearGradient(
+                    colors: [backgroundColor.opacity(0.25), .clear],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .navigationDestination(for: HealthMetricContext.self) { metric in
                 HealthDataListView(metric: metric)
             }

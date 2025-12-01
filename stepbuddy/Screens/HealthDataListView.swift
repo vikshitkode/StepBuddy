@@ -20,6 +20,10 @@ struct HealthDataListView: View {
         metric == .steps ? hkManager.stepData : hkManager.weightData
     }
     
+    var backgroundColor: Color {
+        metric == .steps ? .pink : .indigo
+    }
+    
     var body: some View {
         List {
             Section(header:
@@ -38,6 +42,14 @@ struct HealthDataListView: View {
             }
         }
         .navigationTitle(metric.title)
+        .scrollContentBackground(.hidden)
+        .background(
+            LinearGradient(
+                colors: [backgroundColor.opacity(0.25), .clear],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
         .sheet(isPresented: $isShowingAddData) { addDataView }
         .toolbar {
             Button("Add Data", systemImage: "plus") { isShowingAddData = true }

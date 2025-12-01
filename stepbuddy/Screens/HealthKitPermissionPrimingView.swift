@@ -40,15 +40,19 @@ struct HealthKitPermissionPrimingView: View {
                         .foregroundStyle(.secondary)
                 }
             
-            VStack(spacing: 20){
-                Button("Continue"){
-                    isShowingHealthKitPermissions = true
+                if #available(iOS 26.0, *){
+                    Button("Continue"){
+                        isShowingHealthKitPermissions = true
+                    }
+                    .buttonStyle(.glassProminent)
+                    .tint(.pink)
+                } else {
+                    Button("Continue"){
+                        isShowingHealthKitPermissions = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.pink)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.pink)
-                
-                Button("Not now") { dismiss() }
-            }
 
         }.padding(30)
             .interactiveDismissDisabled()
