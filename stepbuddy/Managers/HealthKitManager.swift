@@ -42,7 +42,7 @@ class HealthKitManager {
                 .init(date: $0.startDate, value: $0.sumQuantity()?.doubleValue(for: .count()) ?? 0)
             }
         } catch {
-            
+            print("No steps data fetched")
         }
     }
     
