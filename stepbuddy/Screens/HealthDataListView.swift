@@ -27,7 +27,7 @@ struct HealthDataListView: View {
     var body: some View {
         List {
             Section(header:
-                        Text("Only the last 28 days are shown on this screen.")
+                        Text("Only last 28 days are shown on this screen.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .padding(.top, 4)
