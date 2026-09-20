@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   build-and-test:
-    runs-on: macos-latest
+    runs-on: xcode-27
 
     steps:
       - name: Checkout repository
@@ -41,12 +41,12 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             build
-    
+
       - name: Test
         run: |
           xcodebuild \
             -project stepbuddy.xcodeproj \
             -scheme stepbuddy \
-            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
+            -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0' \
             CODE_SIGNING_ALLOWED=NO \
             test
