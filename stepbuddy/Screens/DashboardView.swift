@@ -87,32 +87,19 @@ struct DashboardView: View {
             .navigationTitle("Dashboard")
             .toolbar {
                 if selectedStat == .weight {
+                    // BMI Button shown only in weight tab
                     ToolbarItem {
-                            Button {
-                                isShowingBMISheet = true
-                                print("BMI button tapped")
-                            } label: {
-                                Image(systemName: "gauge.with.dots.needle.67percent")
-                            }
+                        Button {
+                            isShowingBMISheet = true
+                            print("BMI button tapped")
+                        } label: {
+                            Image(systemName: "gauge.with.dots.needle.67percent")
+                        }
                     }
                 }
-                
+                // Apple Intelligence Button
                 ToolbarItem {
-                    Button {
-                        isShowingAppleIntelligenceSheet = true
-                        print("Apple intelligence tapped")
-                    } label: {
-                        LinearGradient.customGradientColor
-                            .frame(width: 24, height: 24)
-                            .mask {
-                                Image(systemName: "apple.intelligence")
-                                    .resizable()
-                                    .scaledToFit()
-                            }
-                        
-                    }
-                    .buttonStyle(.plain)
-                    .popoverTip(appleIntelligenceTip)
+                    appleIntelligenceButton
                 }
             }
             .toolbarTitleDisplayMode(.inlineLarge)
@@ -138,7 +125,30 @@ struct DashboardView: View {
             
         }.tint(isSteps ? .pink : .indigo)
     }
+    
+    @ViewBuilder
+    private var appleIntelligenceButton: some View {
+        let button = Button {
+            isShowingAppleIntelligenceSheet = true
+        } label: {
+            LinearGradient.customGradientColor
+                .frame(width: 24, height: 24)
+                .mask {
+                    Image(systemName: "apple.intelligence")
+                        .resizable()
+                        .scaledToFit()
+                }
+        }
+
+        if hasSeenPermissionPriming {
+            button
+                .popoverTip(appleIntelligenceTip)
+        } else {
+            button
+        }
+    }
 }
+
 
 #Preview {
     DashboardView().environment(HealthKitManager())
