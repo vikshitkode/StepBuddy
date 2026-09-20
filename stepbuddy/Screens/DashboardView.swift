@@ -32,24 +32,13 @@ struct DashboardView: View {
     @State private var isShowingPermissionPrimingSheet: Bool = false
     @State private var selectedStat: HealthMetricContext = .steps
     @State private  var isShowingBMISheet: Bool = false
+    @State private var isShowingAppleIntelligenceSheet = false
+    private let appleIntelligenceTip = AppleIntelligenceTip()
     
     var isSteps: Bool { selectedStat == .steps }
     
     var backgroundColor: Color {
         selectedStat == .steps ? .pink : .indigo
-    }
-    
-    var customGradientColor: LinearGradient {
-        LinearGradient(
-            colors: [
-                Color(red: 1.0, green: 0.70, blue: 0.20),
-                Color(red: 0.99, green: 0.30, blue: 0.50),
-                Color(red: 0.32, green: 0.57, blue: 1.0),
-                Color(red: 0.30, green: 0.80, blue: 0.90)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
     }
     
     var body: some View {
@@ -72,19 +61,14 @@ struct DashboardView: View {
                         WeightDiffBarChart(chartData: ChartMath.avgDailyWeightDiff(for: hkManager.weightDiffData))
                         
                         VStack(spacing: 30){
-                            /// BMI Calculation
-                            Button("Calculate BMI") {
-                                isShowingBMISheet = true
-                            }
-                            .buttonStyle(.bordered)
-                            .padding(.top, 8)
-                            
-                            /// Review for the App
+                            Spacer()
+                            /// App Review
                             Button("Leave us a Review!") {
                                 if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                                     AppStore.requestReview(in: scene)
                                 }
-                            }.foregroundStyle(.indigo)
+                            }
+                            .foregroundStyle(.indigo)
                         }
                     }
                     
@@ -102,14 +86,33 @@ struct DashboardView: View {
             }
             .navigationTitle("Dashboard")
             .toolbar {
-                ToolbarItem {
-                    customGradientColor
-                    .frame(width: 24, height: 24)
-                    .mask {
-                        Image(systemName: "apple.intelligence")
-                            .resizable()
-                            .scaledToFit()
+                if selectedStat == .weight {
+                    ToolbarItem {
+                            Button {
+                                isShowingBMISheet = true
+                                print("BMI button tapped")
+                            } label: {
+                                Image(systemName: "gauge.with.dots.needle.67percent")
+                            }
                     }
+                }
+                
+                ToolbarItem {
+                    Button {
+                        isShowingAppleIntelligenceSheet = true
+                        print("Apple intelligence tapped")
+                    } label: {
+                        LinearGradient.customGradientColor
+                            .frame(width: 24, height: 24)
+                            .mask {
+                                Image(systemName: "apple.intelligence")
+                                    .resizable()
+                                    .scaledToFit()
+                            }
+                        
+                    }
+                    .buttonStyle(.plain)
+                    .popoverTip(appleIntelligenceTip)
                 }
             }
             .toolbarTitleDisplayMode(.inlineLarge)
@@ -128,6 +131,9 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $isShowingBMISheet) {
                 BMICalculatorSheet()
+            }
+            .sheet(isPresented: $isShowingAppleIntelligenceSheet) {
+                AppleIntelligenceView()
             }
             
         }.tint(isSteps ? .pink : .indigo)

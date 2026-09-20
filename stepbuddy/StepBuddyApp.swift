@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
+import TipKit
 
 @main
 struct StepBuddyApp: App {
     
     let hkManager = HealthKitManager()
+    
+    init() {
+        try? Tips.configure()
+    }
     
     var body: some Scene {
         WindowGroup {

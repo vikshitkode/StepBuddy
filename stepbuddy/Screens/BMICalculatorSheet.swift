@@ -16,8 +16,7 @@ struct BMICalculatorSheet: View {
     @State private var feet: Int = 5
     @State private var inches: Int = 9
     
-    @State private var bmi: Double? = nil
-    @State private var category: String = ""
+    @State private var bmi: Double?
     
     var body: some View {
         NavigationStack {
@@ -29,6 +28,7 @@ struct BMICalculatorSheet: View {
                                 Text("\($0) lb")
                             }
                         }
+                        .pickerStyle(.wheel)
                         .frame(maxWidth: .infinity)
                         .labelsHidden()
                     }
@@ -41,22 +41,21 @@ struct BMICalculatorSheet: View {
                                 Text("\($0) ft")
                             }
                         }
+                        .pickerStyle(.wheel)
                         .frame(maxWidth: .infinity)
                         .labelsHidden()
                         
                         Picker("Inches", selection: $inches) {
                             ForEach(0...11, id: \.self) { Text("\($0) in") }
                         }
+                        .pickerStyle(.wheel)
                         .frame(maxWidth: .infinity)
                         .labelsHidden()
                     }
                 }
                 
                 Button("Calculate") {
-                    withAnimation {
-                        bmi = computeBMI()
-                        category = bmiCategory(bmi ?? 0)
-                    }
+                    bmi = computeBMI()
                 }
                 .buttonStyle(.borderedProminent)
                 
@@ -64,14 +63,25 @@ struct BMICalculatorSheet: View {
                     VStack(spacing: 6) {
                         Text("Your BMI")
                             .font(.headline)
-                        Text(bmi.formatted(.number.precision(.fractionLength(1))))
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                        Text(category)
+
+                        Text(
+                            bmi.formatted(
+                                .number.precision(.fractionLength(1))
+                            )
+                        )
+                        .font(.system(
+                            size: 44,
+                            weight: .bold,
+                            design: .rounded
+                        ))
+
+                        Text(bmiCategory(bmi))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                     .padding(.top, 8)
                     .transition(.opacity.combined(with: .scale))
+                    .animation(.easeInOut, value: bmi)
                 }
                 
                 Spacer()
@@ -90,20 +100,20 @@ struct BMICalculatorSheet: View {
         .tint(.indigo)
     }
     
-    /// BMI Calculation Code
+    /// BMI Calculation
     private func computeBMI() -> Double {
         let totalInches = Double(feet * 12 + inches)
         guard totalInches > 0 else { return 0 }
         return 703.0 * Double(weightLb) / (totalInches * totalInches)
     }
     
-    /// BMI Category Message
+    /// BMI Category
     private func bmiCategory(_ bmi: Double) -> String {
         switch bmi {
-        case ..<18.5: return "Underweight 🙇"
-        case 18.5..<25: return "Normal ✅"
-        case 25..<30: return "Overweight ⚠️"
-        default: return "Obesity 🚩"
+            case ..<18.5: return "Underweight 🙇"
+            case 18.5..<25: return "Normal ✅"
+            case 25..<30: return "Overweight ⚠️"
+            default: return "Obesity 🚩"
         }
     }
 }
