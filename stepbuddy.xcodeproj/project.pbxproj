@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF1C95822DDEC1920057E3C6 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = BF1C95812DDEC1920057E3C6 /* Algorithms */; };
+		BFC7783A306069D100A6EA25 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = BFC77839306069D100A6EA25 /* Algorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF1C95822DDEC1920057E3C6 /* Algorithms in Frameworks */,
+				BFC7783A306069D100A6EA25 /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +70,7 @@
 			);
 			name = stepbuddy;
 			packageProductDependencies = (
-				BF1C95812DDEC1920057E3C6 /* Algorithms */,
+				BFC77839306069D100A6EA25 /* Algorithms */,
 			);
 			productName = stepbuddy;
 			productReference = BF8CE8982DC4A06500D23F30 /* stepbuddy.app */;
@@ -101,7 +101,7 @@
 			mainGroup = BF8CE88F2DC4A06500D23F30;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				BF1C95802DDEC1920057E3C6 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				BFC77838306069D100A6EA25 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF8CE8992DC4A06500D23F30 /* Products */;
@@ -276,7 +276,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -311,7 +311,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -349,7 +349,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		BF1C95802DDEC1920057E3C6 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+		BFC77838306069D100A6EA25 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-algorithms.git";
 			requirement = {
@@ -360,9 +360,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		BF1C95812DDEC1920057E3C6 /* Algorithms */ = {
+		BFC77839306069D100A6EA25 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = BF1C95802DDEC1920057E3C6 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			package = BFC77838306069D100A6EA25 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
