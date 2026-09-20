@@ -47,6 +47,6 @@ jobs:
           xcodebuild \
             -project stepbuddy.xcodeproj \
             -scheme stepbuddy \
-            -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0' \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=27.0' \
             CODE_SIGNING_ALLOWED=NO \
             test
