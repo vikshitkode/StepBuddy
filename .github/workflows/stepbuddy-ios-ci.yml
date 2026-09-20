@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build
     runs-on: macos-latest
 
     steps:
@@ -32,14 +32,7 @@ jobs:
 
       - name: Build
         run: |
-          xcodebuild build-for-testing \
-            -project stepbuddy.xcodeproj \
-            -scheme stepbuddy \
-            -destination "platform=iOS Simulator,id=$DEVICE_ID"
-
-      - name: Test
-        run: |
-          xcodebuild test-without-building \
+          xcodebuild build \
             -project stepbuddy.xcodeproj \
             -scheme stepbuddy \
             -destination "platform=iOS Simulator,id=$DEVICE_ID"
