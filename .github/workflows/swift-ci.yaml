@@ -4,23 +4,34 @@
 name: StepBuddy iOS CI
 
 on:
+  workflow_dispatch:
+
   push:
     branches: [ "main" ]
 
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
-
     runs-on: macos-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show Xcode version
+      - name: Xcode version
         run: xcodebuild -version
+
+      - name: Available simulators
+        run: xcrun simctl list devices available
 
       - name: Build
         run: |
@@ -32,7 +43,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Run tests
+      - name: Test
         run: |
           xcodebuild \
             -project stepbuddy.xcodeproj \
