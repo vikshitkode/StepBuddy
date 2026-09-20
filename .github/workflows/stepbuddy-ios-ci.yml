@@ -20,13 +20,6 @@ jobs:
           xcodebuild -version
           xcrun simctl list devices available
 
-      - name: Set Default Scheme
-        run: |
-          scheme_list=$(xcodebuild -list -json | tr -d "\n")
-          default=$(echo "$scheme_list" | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
-          echo "$default" > default
-          echo "Using default scheme: $default"
-
       - name: Select Simulator
         run: |
           DEVICE_ID=$(xcrun simctl list devices available \
@@ -39,34 +32,14 @@ jobs:
 
       - name: Build
         run: |
-          scheme=$(cat default)
-
-          if ls *.xcworkspace 1> /dev/null 2>&1; then
-            filetype_parameter="workspace"
-            file_to_build=$(ls *.xcworkspace | head -1)
-          else
-            filetype_parameter="project"
-            file_to_build=$(ls *.xcodeproj | head -1)
-          fi
-
           xcodebuild build-for-testing \
-            -scheme "$scheme" \
-            -"$filetype_parameter" "$file_to_build" \
+            -project stepbuddy.xcodeproj \
+            -scheme stepbuddy \
             -destination "platform=iOS Simulator,id=$DEVICE_ID"
 
       - name: Test
         run: |
-          scheme=$(cat default)
-
-          if ls *.xcworkspace 1> /dev/null 2>&1; then
-            filetype_parameter="workspace"
-            file_to_build=$(ls *.xcworkspace | head -1)
-          else
-            filetype_parameter="project"
-            file_to_build=$(ls *.xcodeproj | head -1)
-          fi
-
           xcodebuild test-without-building \
-            -scheme "$scheme" \
-            -"$filetype_parameter" "$file_to_build" \
+            -project stepbuddy.xcodeproj \
+            -scheme stepbuddy \
             -destination "platform=iOS Simulator,id=$DEVICE_ID"
