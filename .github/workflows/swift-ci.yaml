@@ -39,7 +39,7 @@ jobs:
             -project stepbuddy.xcodeproj \
             -scheme stepbuddy \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest' \
             CODE_SIGNING_ALLOWED=NO \
             build
 
@@ -49,6 +49,6 @@ jobs:
             -project stepbuddy.xcodeproj \
             -scheme stepbuddy \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest' \
             CODE_SIGNING_ALLOWED=NO \
             test
