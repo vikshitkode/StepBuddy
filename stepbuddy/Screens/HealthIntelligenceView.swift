@@ -427,6 +427,7 @@ private struct ThinkingIndicator: View {
                     Image(systemName: "apple.intelligence")
                         .popoverTip(HealthIntelligenceTip())
                         .tipViewStyle(CompactTipViewStyle())
+                        .tipBackground(.ultraThickMaterial)
                 }
             }
     }
