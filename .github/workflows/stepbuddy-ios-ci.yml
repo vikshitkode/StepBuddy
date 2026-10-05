@@ -6,33 +6,38 @@ on:
   pull_request:
     branches: ["main"]
 
+# Cancel an in-progress run when a newer commit is pushed to the same branch or PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build
-    runs-on: macos-latest
+    # Pinned instead of macos-latest so the image only changes when we choose to
+    runs-on: macos-26
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Show Xcode version
+      # The image's default Xcode lags behind new releases. Use the newest stable
+      # Xcode installed (betas and RCs are skipped), so CI moves to Xcode 27 as
+      # soon as GitHub adds it to the image.
+      - name: Select latest Xcode
         run: |
+          XCODE=$(ls -d /Applications/Xcode_*.app \
+            | grep -E '/Xcode_[0-9]+(\.[0-9]+)*\.app$' \
+            | sort -V \
+            | tail -1)
+          sudo xcode-select -s "$XCODE"
           xcodebuild -version
-          xcrun simctl list devices available
 
-      - name: Select Simulator
-        run: |
-          DEVICE_ID=$(xcrun simctl list devices available \
-            | grep "iPhone" \
-            | head -1 \
-            | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
-
-          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
-          echo "Using simulator: $DEVICE_ID"
-
+      # A build doesn't need a booted simulator, so build for the generic
+      # destination (same command as CLAUDE.md) instead of picking a device
       - name: Build
         run: |
           xcodebuild build \
             -project stepbuddy.xcodeproj \
             -scheme stepbuddy \
-            -destination "platform=iOS Simulator,id=$DEVICE_ID"
+            -destination 'generic/platform=iOS Simulator'
