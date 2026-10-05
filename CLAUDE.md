@@ -20,7 +20,7 @@ xcodebuild build \
   -destination 'generic/platform=iOS Simulator'
 ```
 
-CI (`.github/workflows/`) runs the same build on `macos-latest` for pushes and PRs to `main`, picking the first available iPhone simulator. There is no test step.
+CI (`.github/workflows/`) runs the same build on `macos-26` for pushes and PRs to `main`, using the newest stable Xcode installed on the runner. There is no test step. GitHub's runners can lag behind the local Xcode (e.g. still Xcode 26 while developing on 27), so code using newer-SDK-only types must be guarded with `#if compiler(...)`, not just `#available`.
 
 HealthKit has no real data in the simulator. To seed it, temporarily uncomment `addSimulatorData()` in `HealthKitManager` and its call in `DashboardView.task` — never commit it uncommented.
 
