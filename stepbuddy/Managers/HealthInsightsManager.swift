@@ -124,6 +124,9 @@ final class HealthInsightsManager {
 
     /// Maps model errors to a user-facing message, and whether the chat must start over.
     private static func message(for error: Error) -> (text: String, shouldReset: Bool) {
+        // LanguageModelError only exists in the iOS 27 SDK (Xcode 27 / Swift 6.4).
+        // CI builds with Xcode 26, so the runtime #available check alone doesn't compile there.
+        #if compiler(>=6.4)
         if #available(iOS 27, *), let error = error as? LanguageModelError {
             switch error {
             case .contextSizeExceeded:
@@ -136,6 +139,7 @@ final class HealthInsightsManager {
                 return ("Something went wrong. Please try again.", false)
             }
         }
+        #endif
 
         if let error = error as? LanguageModelSession.GenerationError {
             switch error {
