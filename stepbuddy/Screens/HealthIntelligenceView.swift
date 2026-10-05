@@ -23,28 +23,45 @@ struct HealthIntelligenceTip: Tip {
     }
 }
 
-/// Compact layout for the dashboard tip. TipKit's default style keeps its full-size
-/// spacing even with smaller fonts, which left the bubble mostly empty.
+/// Dashboard tip shown inline as a card, styled like the chart cards.
+/// The layout lives in `CompactTipCard` so it can be previewed without TipKit.
 struct CompactTipViewStyle: TipViewStyle {
 
     func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: 10) {
-            configuration.image?
-                .font(.title3)
-                .foregroundStyle(.tint)
+        CompactTipCard(image: configuration.image, title: configuration.title, message: configuration.message) {
+            configuration.tip.invalidate(reason: .tipClosed)
+        }
+    }
+}
+
+struct CompactTipCard: View {
+
+    let image: Image?
+    let title: Text?
+    let message: Text?
+    let onClose: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Gradient like the toolbar button, since the inline card has no arrow pointing at it
+            image?
+                .font(.title2)
+                .foregroundStyle(LinearGradient.customGradientColor)
 
             VStack(alignment: .leading, spacing: 2) {
-                configuration.title?
+                title?
                     .font(.subheadline.weight(.semibold))
 
-                configuration.message?
+                message?
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             .fixedSize(horizontal: false, vertical: true)
 
+            Spacer(minLength: 0)
+
             Button {
-                configuration.tip.invalidate(reason: .tipClosed)
+                onClose()
             } label: {
                 Image(systemName: "xmark")
                     .font(.footnote.weight(.semibold))
@@ -55,8 +72,13 @@ struct CompactTipViewStyle: TipViewStyle {
             .buttonStyle(.plain)
             .accessibilityLabel("Close")
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(.gray.opacity(0.5), lineWidth: 0.5)
+                .fill(Color(.secondarySystemBackground).gradient.opacity(0.5))
+        )
     }
 }
 
@@ -416,21 +438,21 @@ private struct ThinkingIndicator: View {
         .background(RoundedRectangle(cornerRadius: 18).fill(Color(.secondarySystemBackground)))
 }
 
+// TipKit doesn't show tips in preview snapshots, so preview the card layout directly
 #Preview("Health Intelligence Tip") {
-    let _ = Tips.showAllTipsForTesting()
-    let _ = try? Tips.configure()
+    ScrollView {
+        VStack(spacing: 25) {
+            CompactTipCard(
+                image: HealthIntelligenceTip().image,
+                title: HealthIntelligenceTip().title,
+                message: HealthIntelligenceTip().message
+            ) {}
 
-    NavigationStack {
-        Color.clear
-            .toolbar {
-                ToolbarItem {
-                    Image(systemName: "apple.intelligence")
-                        .popoverTip(HealthIntelligenceTip())
-                        .tipViewStyle(CompactTipViewStyle())
-                        .tipBackground(.ultraThickMaterial)
-                }
-            }
+            StepBarChart(selectedStat: .steps, chartData: MockData.steps)
+        }
+        .padding()
     }
+    .background(LinearGradient(colors: [Color.pink.opacity(0.25), .clear], startPoint: .topLeading, endPoint: .bottomTrailing))
 }
 
 #Preview {
