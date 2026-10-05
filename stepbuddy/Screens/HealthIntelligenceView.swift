@@ -10,12 +10,15 @@ import TipKit
 import FoundationModels
 
 struct HealthIntelligenceTip: Tip {
+    // One step smaller than TipKit's default fonts (.headline / .subheadline)
     var title: Text {
         Text("Health Intelligence")
+            .font(.subheadline.weight(.semibold))
     }
 
     var message: Text? {
         Text("Use AI to understand your health data.")
+            .font(.footnote)
     }
 
     var image: Image? {
