@@ -114,6 +114,7 @@ struct DashboardView: View {
                     }
                     .buttonStyle(.plain)
                     .popoverTip(healthIntelligenceTip)
+                    .tipImageSize(CGSize(width: 24, height: 24))
                 }
             }
             .toolbarTitleDisplayMode(.inlineLarge)
