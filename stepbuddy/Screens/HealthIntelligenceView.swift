@@ -10,19 +10,53 @@ import TipKit
 import FoundationModels
 
 struct HealthIntelligenceTip: Tip {
-    // One step smaller than TipKit's default fonts (.headline / .subheadline)
     var title: Text {
         Text("Health Intelligence")
-            .font(.subheadline.weight(.semibold))
     }
 
     var message: Text? {
         Text("Use AI to understand your health data.")
-            .font(.footnote)
     }
 
     var image: Image? {
         Image(systemName: "apple.intelligence")
+    }
+}
+
+/// Compact layout for the dashboard tip. TipKit's default style keeps its full-size
+/// spacing even with smaller fonts, which left the bubble mostly empty.
+struct CompactTipViewStyle: TipViewStyle {
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 10) {
+            configuration.image?
+                .font(.title3)
+                .foregroundStyle(.tint)
+
+            VStack(alignment: .leading, spacing: 2) {
+                configuration.title?
+                    .font(.subheadline.weight(.semibold))
+
+                configuration.message?
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+
+            Button {
+                configuration.tip.invalidate(reason: .tipClosed)
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Close")
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
     }
 }
 
@@ -380,6 +414,22 @@ private struct ThinkingIndicator: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .background(RoundedRectangle(cornerRadius: 18).fill(Color(.secondarySystemBackground)))
+}
+
+#Preview("Health Intelligence Tip") {
+    let _ = Tips.showAllTipsForTesting()
+    let _ = try? Tips.configure()
+
+    NavigationStack {
+        Color.clear
+            .toolbar {
+                ToolbarItem {
+                    Image(systemName: "apple.intelligence")
+                        .popoverTip(HealthIntelligenceTip())
+                        .tipViewStyle(CompactTipViewStyle())
+                }
+            }
+    }
 }
 
 #Preview {
