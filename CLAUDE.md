@@ -30,10 +30,12 @@ HealthKit has no real data in the simulator. To seed it, temporarily uncomment `
 stepbuddy/
   StepBuddyApp.swift        App entry; creates HealthKitManager, injects via .environment; configures TipKit
   Managers/HealthKitManager.swift  @Observable; all HealthKit auth, queries and writes
+  Managers/HealthInsightsManager.swift  @Observable, iOS 26+; all Foundation Models sessions (insight card + chat)
   Model/HealthMetric.swift  { date, value } — one data point per day
+  Model/HealthInsight.swift @Generable insight (summary, 3 highlights, suggestion) + ChatMessage
   Charts/                   Chart views + ChartMath (weekday averages, weight diffs) + ChartDataTypes
-  Screens/                  DashboardView (root), HealthDataListView, BMI sheet, permission priming, Apple Intelligence placeholder
-  Utilities/                MockData (for #Previews), Date/Color extensions
+  Screens/                  DashboardView (root), HealthDataListView, BMI sheet, permission priming, HealthIntelligenceView
+  Utilities/                MockData (for #Previews), HealthDataSummary (data → model prompt text), Date/Color extensions
 ```
 
 - **State:** one `HealthKitManager` instance is shared through SwiftUI's `@Environment(HealthKitManager.self)`. It exposes `stepData`, `weightData`, `weightDiffData` arrays that views read directly.
@@ -41,6 +43,7 @@ stepbuddy/
 - **Navigation:** `HealthMetricContext` (`.steps` / `.weight`) drives the segmented picker, theme color (pink for steps, indigo for weight) and `navigationDestination` to `HealthDataListView`.
 - **Permissions:** `HealthKitPermissionPrimingView` is shown once (`@AppStorage("hasSeenPermissionPriming")`) before requesting HealthKit authorization. Usage strings live in build settings (`INFOPLIST_KEY_NSHealth*UsageDescription`), not an Info.plist file.
 - **Units:** weight is in pounds (`.pound()`) throughout; BMI calculator uses lb / ft-in.
+- **Health Intelligence:** uses the on-device Foundation Models framework, which needs iOS 26+, while the app targets iOS 18. All FoundationModels code is `@available(iOS 26, *)` and `HealthIntelligenceView` falls back to a "Requires iOS 26" message. `HealthDataSummary` precomputes stats in code (the small model is bad at arithmetic) and the text goes into the session instructions. Errors are mapped for both the iOS 26 `GenerationError` and the iOS 27 `LanguageModelError`.
 
 ## Conventions
 
@@ -54,4 +57,3 @@ stepbuddy/
 - `WeightLineChart` shows a hardcoded "Avg: 180 lbs".
 - `addStepData` / `addWeightData` crash via `try!` if the save fails (e.g. write permission denied).
 - `fetchWeights` and `fetchWeightsForDifferentials` are near-duplicates and silently ignore errors.
-- `AppleIntelligenceView` is a "Coming soon" placeholder.

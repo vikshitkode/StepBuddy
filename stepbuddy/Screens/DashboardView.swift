@@ -32,8 +32,9 @@ struct DashboardView: View {
     @State private var isShowingPermissionPrimingSheet: Bool = false
     @State private var selectedStat: HealthMetricContext = .steps
     @State private  var isShowingBMISheet: Bool = false
-    @State private var isShowingAppleIntelligenceSheet = false
-    private let appleIntelligenceTip = AppleIntelligenceTip()
+    @State private var isShowingHealthIntelligenceSheet = false
+    @State private var healthIntelligenceStore = HealthIntelligenceStore()
+    private let healthIntelligenceTip = HealthIntelligenceTip()
     
     var isSteps: Bool { selectedStat == .steps }
     
@@ -99,8 +100,8 @@ struct DashboardView: View {
                 
                 ToolbarItem {
                     Button {
-                        isShowingAppleIntelligenceSheet = true
-                        print("Apple intelligence tapped")
+                        isShowingHealthIntelligenceSheet = true
+                        print("Health Intelligence tapped")
                     } label: {
                         LinearGradient.customGradientColor
                             .frame(width: 24, height: 24)
@@ -112,7 +113,7 @@ struct DashboardView: View {
                         
                     }
                     .buttonStyle(.plain)
-                    .popoverTip(appleIntelligenceTip)
+                    .popoverTip(healthIntelligenceTip)
                 }
             }
             .toolbarTitleDisplayMode(.inlineLarge)
@@ -132,8 +133,8 @@ struct DashboardView: View {
             .sheet(isPresented: $isShowingBMISheet) {
                 BMICalculatorSheet()
             }
-            .sheet(isPresented: $isShowingAppleIntelligenceSheet) {
-                AppleIntelligenceView()
+            .sheet(isPresented: $isShowingHealthIntelligenceSheet) {
+                HealthIntelligenceView(store: healthIntelligenceStore)
             }
             
         }.tint(isSteps ? .pink : .indigo)
