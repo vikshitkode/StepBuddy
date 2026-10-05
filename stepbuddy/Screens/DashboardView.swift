@@ -8,6 +8,7 @@
 import SwiftUI
 import Charts
 import StoreKit
+import TipKit
 
 enum HealthMetricContext: CaseIterable, Identifiable {
     case steps, weight
@@ -47,6 +48,13 @@ struct DashboardView: View {
             ScrollView {
                 
                 VStack(spacing: 25){
+                    // Inline instead of a popover: on iOS 26 the popover's Liquid Glass bubble
+                    // can't be made opaque, and the large title showed through it
+                    TipView(healthIntelligenceTip)
+                        .tipViewStyle(CompactTipViewStyle())
+                        // The card draws its own background
+                        .tipBackground(Color.clear)
+
                     Picker("Selected Stats", selection: $selectedStat) {
                         ForEach(HealthMetricContext.allCases) {
                             Text($0.title)
@@ -101,6 +109,7 @@ struct DashboardView: View {
                 ToolbarItem {
                     Button {
                         isShowingHealthIntelligenceSheet = true
+                        healthIntelligenceTip.invalidate(reason: .actionPerformed)
                         print("Health Intelligence tapped")
                     } label: {
                         LinearGradient.customGradientColor
@@ -113,10 +122,6 @@ struct DashboardView: View {
                         
                     }
                     .buttonStyle(.plain)
-                    .popoverTip(healthIntelligenceTip)
-                    .tipViewStyle(CompactTipViewStyle())
-                    // The default glass let the large title show through and blend with the text
-                    .tipBackground(.ultraThickMaterial)
                 }
             }
             .toolbarTitleDisplayMode(.inlineLarge)
