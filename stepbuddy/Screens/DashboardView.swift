@@ -115,6 +115,8 @@ struct DashboardView: View {
                     .buttonStyle(.plain)
                     .popoverTip(healthIntelligenceTip)
                     .tipViewStyle(CompactTipViewStyle())
+                    // The default glass let the large title show through and blend with the text
+                    .tipBackground(.ultraThickMaterial)
                 }
             }
             .toolbarTitleDisplayMode(.inlineLarge)
