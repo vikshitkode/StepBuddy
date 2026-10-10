@@ -85,12 +85,18 @@ struct HealthIntelligenceView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(HealthKitManager.self) private var hkManager
+    @AppStorage(StepGoal.storageKey) private var dailyStepGoal = StepGoal.defaultValue
 
     var body: some View {
         NavigationStack {
             Group {
                 if #available(iOS 26, *) {
-                    HealthInsightsScreen(insights: store.insightsManager, steps: hkManager.stepData, weights: hkManager.weightData)
+                    HealthInsightsScreen(
+                        insights: store.insightsManager,
+                        steps: hkManager.stepData,
+                        weights: hkManager.weightData,
+                        stepGoal: StepGoalStatus(goal: dailyStepGoal, history: hkManager.stepHistory)
+                    )
                 } else {
                     ContentUnavailableView(
                         "Requires iOS 26",
@@ -118,6 +124,7 @@ private struct HealthInsightsScreen: View {
     let insights: HealthInsightsManager
     let steps: [HealthMetric]
     let weights: [HealthMetric]
+    let stepGoal: StepGoalStatus
 
     var body: some View {
         switch insights.model.availability {
@@ -125,7 +132,7 @@ private struct HealthInsightsScreen: View {
             if HealthDataSummary.hasData(steps: steps, weights: weights) {
                 InsightsChatView(insights: insights)
                     .task {
-                        insights.prepare(steps: steps, weights: weights)
+                        insights.prepare(steps: steps, weights: weights, stepGoal: stepGoal)
                     }
             } else {
                 EmptyStateCard(
@@ -440,7 +447,7 @@ private struct ThinkingIndicator: View {
                 message: HealthIntelligenceTip().message
             ) {}
 
-            StepBarChart(selectedStat: .steps, chartData: MockData.steps)
+            StepBarChart(selectedStat: .steps, chartData: MockData.steps, goal: 10_000)
         }
         .padding()
     }

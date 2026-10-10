@@ -31,8 +31,8 @@ final class HealthInsightsManager {
     /// Sets up the model for this data and generates the insight card.
     /// If the data hasn't changed since the last call, the existing insight and chat are kept,
     /// so reopening the sheet picks up where the user left off.
-    func prepare(steps: [HealthMetric], weights: [HealthMetric]) {
-        let summary = HealthDataSummary.promptText(steps: steps, weights: weights)
+    func prepare(steps: [HealthMetric], weights: [HealthMetric], stepGoal: StepGoalStatus?) {
+        let summary = HealthDataSummary.promptText(steps: steps, weights: weights, stepGoal: stepGoal)
 
         guard summary != dataSummary else {
             if insight == nil && !isGeneratingInsight {

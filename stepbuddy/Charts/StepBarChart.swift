@@ -13,6 +13,7 @@ struct StepBarChart: View {
 
     var selectedStat: HealthMetricContext
     var chartData: [HealthMetric]
+    var goal: Double
     
 
     var avgStepCount: Double {
@@ -35,7 +36,7 @@ struct StepBarChart: View {
                         Label("Steps", systemImage: "figure.walk")
                             .font(.title3.bold())
                             .foregroundStyle(.pink)
-                        Text("Avg: \(Int(avgStepCount)) steps")
+                        Text("Avg: \(Int(avgStepCount)) steps  ·  \(goalText)")
                             .font(.caption)
                     }
                     Spacer()
@@ -99,18 +100,36 @@ struct StepBarChart: View {
                     .foregroundStyle(Color.secondary)
                     .lineStyle(.init(lineWidth: 1, dash: [5]))
 
+                RuleMark(y: .value("Goal", goal))
+                    .foregroundStyle(.mint)
+                    .lineStyle(.init(lineWidth: 1, dash: [5]))
+
                 ForEach(chartData, id: \.date) { steps in
                     BarMark(
                         x: .value("Date", steps.date, unit: .day),
                         y: .value("Steps", steps.value)
                     )
                     .foregroundStyle(Color.pink.gradient)
-                    .opacity(rawSelectedDate == nil || steps.date == selected?.date ? 1.0 : 0.3)
+                    .opacity(barOpacity(for: steps, selected: selected))
                 }
             }
         }
     }
 
+
+    /// Colored like the goal line in the chart
+    private var goalText: Text {
+        Text("Goal: \(goal, format: .number.precision(.fractionLength(0)))")
+            .foregroundStyle(.mint)
+    }
+
+    /// While a bar is selected the others fade; otherwise days below the goal are dimmed
+    private func barOpacity(for steps: HealthMetric, selected: HealthMetric?) -> Double {
+        if rawSelectedDate != nil {
+            return steps.date == selected?.date ? 1.0 : 0.3
+        }
+        return steps.value >= goal ? 1.0 : 0.45
+    }
 
     private var annotationView: some View {
         VStack(alignment: .leading) {
@@ -135,5 +154,5 @@ struct StepBarChart: View {
 }
 
 #Preview {
-    StepBarChart(selectedStat: .steps, chartData: MockData.steps)
+    StepBarChart(selectedStat: .steps, chartData: MockData.steps, goal: 10_000)
 }

@@ -4,7 +4,7 @@ This file guides Claude Code (claude.ai/code) when working in this repository.
 
 ## Project
 
-StepBuddy is a SwiftUI iOS app that reads step count and body weight from Apple Health (HealthKit) and visualizes the last 28 days with Swift Charts. Users can also write step/weight entries back to Health.
+StepBuddy is a SwiftUI iOS app that reads step count and body weight from Apple Health (HealthKit) and visualizes the last 28 days with Swift Charts. Users can also write step/weight entries back to Health, and set a daily step goal with streaks.
 
 - Single app target `stepbuddy`, bundle ID `com.vikshitkode.stepbuddy`
 - iOS deployment target 18.x, Swift 6 language mode (complete data-race checking; keep it warning-free)
@@ -42,16 +42,18 @@ stepbuddy/
   Managers/HealthInsightsManager.swift  @Observable, iOS 26+; all Foundation Models sessions (insight card + chat)
   Model/HealthMetric.swift  { date, value } — one data point per day
   Model/HealthInsight.swift @Generable insight (summary, 3 highlights, suggestion) + ChatMessage
+  Model/StepGoal.swift      Daily step goal setting (@AppStorage key, range) + StepGoalStatus (today's progress, streaks)
   Charts/                   Chart views + ChartMath (weekday averages, weight diffs) + ChartDataTypes
   Screens/                  DashboardView (root), HealthDataListView, BMI sheet, permission priming, HealthIntelligenceView
-  Utilities/                MockData (for #Previews), HealthDataSummary (data → model prompt text), Date/Color extensions
-stepbuddyTests/             Swift Testing unit tests for the pure logic (ChartMath, HealthDataSummary)
+  Utilities/                MockData (for #Previews), HealthDataSummary (data → model prompt text), StepStreak (goal streak math), Date/Color extensions
+stepbuddyTests/             Swift Testing unit tests for the pure logic (ChartMath, HealthDataSummary, StepStreak)
 ```
 
-- **State:** one `HealthKitManager` instance is shared through SwiftUI's `@Environment(HealthKitManager.self)`. It exposes `stepData`, `weightData`, `weightDiffData` arrays that views read directly. It is `@MainActor`, so views call it without crossing actors; HealthKit does its work off the main thread inside the awaited queries.
+- **State:** one `HealthKitManager` instance is shared through SwiftUI's `@Environment(HealthKitManager.self)`. It exposes `stepData`, `weightData`, `weightDiffData` arrays that views read directly, plus `stepHistory` (a year of daily step totals for goal streaks; `stepData` is its last 28 days). It is `@MainActor`, so views call it without crossing actors; HealthKit does its work off the main thread inside the awaited queries.
 - **Data fetching:** `HKStatisticsCollectionQueryDescriptor` with daily intervals over the last 28 days (29 for weight diffs, so the first day has a predecessor). Steps use `.cumulativeSum`, weight uses `.mostRecent`. Fetches run in `DashboardView`'s `.task`.
 - **Navigation:** `HealthMetricContext` (`.steps` / `.weight`) drives the segmented picker, theme color (pink for steps, indigo for weight) and `navigationDestination` to `HealthDataListView`.
 - **Permissions:** `HealthKitPermissionPrimingView` is shown once (`@AppStorage("hasSeenPermissionPriming")`) before requesting HealthKit authorization. Usage strings live in build settings (`INFOPLIST_KEY_NSHealth*UsageDescription`), not an Info.plist file.
+- **Step goal:** stored with `@AppStorage(StepGoal.storageKey)` (default 10,000, 1,000–50,000 in steps of 500). A streak is consecutive calendar days with steps ≥ the goal; until today's goal is met the streak runs through yesterday. Changing the goal recalculates past streaks (no per-day goal history). `StepGoalCard` + `StepGoalSheet` on the Steps tab; `StepBarChart` draws the goal line and dims days below it. The goal and streak are also in the Health Intelligence prompt.
 - **Units:** weight is in pounds (`.pound()`) throughout; BMI calculator uses lb / ft-in.
 - **Health Intelligence:** uses the on-device Foundation Models framework, which needs iOS 26+, while the app targets iOS 18. All FoundationModels code is `@available(iOS 26, *)` and `HealthIntelligenceView` falls back to a "Requires iOS 26" message. `HealthDataSummary` precomputes stats in code (the small model is bad at arithmetic) and the text goes into the session instructions. Errors are mapped for both the iOS 26 `GenerationError` and the iOS 27 `LanguageModelError`.
 
