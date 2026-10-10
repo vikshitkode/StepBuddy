@@ -54,8 +54,8 @@ stepbuddy/
 - The Xcode project uses file-system-synchronized groups: new files under `stepbuddy/` are picked up automatically, no `project.pbxproj` edits needed.
 - Every view ends with a `#Preview`; chart previews use `MockData` rather than HealthKit.
 - Keep HealthKit access inside `HealthKitManager`; views should not touch `HKHealthStore` directly.
-- Use `async`/`await` for HealthKit calls; no `try!` (SwiftLint `force_try`). `addStepData`/`addWeightData` throw and `HealthDataListView` shows an alert on failure.
+- Use `async`/`await` for HealthKit calls; no `try!` (SwiftLint `force_try`). The fetch and add methods throw: `DashboardView` shows a Retry alert when loading fails and `HealthDataListView` an alert when saving fails.
 
 ## Known issues
 
-- `fetchWeights` and `fetchWeightsForDifferentials` are near-duplicates and silently ignore errors.
+- `fetchWeights` and `fetchWeightsForDifferentials` are near-duplicates.
