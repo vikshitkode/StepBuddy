@@ -22,6 +22,12 @@ xcodebuild build \
 
 CI (`.github/workflows/`) runs the same build on `macos-26` for pushes and PRs to `main`, using the newest stable Xcode installed on the runner. There is no test step. GitHub's runners can lag behind the local Xcode (e.g. still Xcode 26 while developing on 27), so code using newer-SDK-only types must be guarded with `#if compiler(...)`, not just `#available`.
 
+## Linting
+
+SwiftLint (Homebrew, `brew install swiftlint`) is configured in `.swiftlint.yml`. The `SwiftLint` Run Script phase runs before compiling: `swiftlint --fix` auto-corrects what it can, then `swiftlint` reports the rest in Xcode. Only errors fail the build; warnings just show. The phase skips itself when `CI=true`.
+
+CI runs a separate `SwiftLint` job (required check on `main`) with the same pinned version (`SWIFTLINT_VERSION` in the workflow; keep it in sync with `swiftlint version`) and posts violations as PR annotations. Run `swiftlint lint` locally before pushing.
+
 HealthKit has no real data in the simulator. To seed it, temporarily uncomment `addSimulatorData()` in `HealthKitManager` and its call in `DashboardView.task` — never commit it uncommented.
 
 ## Architecture
@@ -50,10 +56,9 @@ stepbuddy/
 - The Xcode project uses file-system-synchronized groups: new files under `stepbuddy/` are picked up automatically, no `project.pbxproj` edits needed.
 - Every view ends with a `#Preview`; chart previews use `MockData` rather than HealthKit.
 - Keep HealthKit access inside `HealthKitManager`; views should not touch `HKHealthStore` directly.
-- Use `async`/`await` for HealthKit calls; avoid `try!` in new code (existing `addStepData`/`addWeightData` still use it).
+- Use `async`/`await` for HealthKit calls; no `try!` (SwiftLint `force_try`). `addStepData`/`addWeightData` throw and `HealthDataListView` shows an alert on failure.
 
 ## Known issues
 
 - `WeightLineChart` shows a hardcoded "Avg: 180 lbs".
-- `addStepData` / `addWeightData` crash via `try!` if the save fails (e.g. write permission denied).
 - `fetchWeights` and `fetchWeightsForDifferentials` are near-duplicates and silently ignore errors.
