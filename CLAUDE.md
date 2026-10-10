@@ -24,9 +24,7 @@ CI (`.github/workflows/`) runs the same build on `macos-26` for pushes and PRs t
 
 ## Linting
 
-SwiftLint (Homebrew, `brew install swiftlint`) is configured in `.swiftlint.yml`. The `SwiftLint` Run Script phase runs before compiling: `swiftlint --fix` auto-corrects what it can, then `swiftlint` reports the rest in Xcode. Only errors fail the build; warnings just show. The phase skips itself when `CI=true`.
-
-CI runs a separate `SwiftLint` job (required check on `main`) with the same pinned version (`SWIFTLINT_VERSION` in the workflow; keep it in sync with `swiftlint version`) and posts violations as PR annotations. Run `swiftlint lint` locally before pushing.
+SwiftLint runs **only in CI**: the `SwiftLint` job (required check on `main`) uses the release pinned by `SWIFTLINT_VERSION` in the workflow, with rules in `.swiftlint.yml`, and posts violations as PR annotations. Only errors fail it. There is deliberately no Xcode build phase, so a Homebrew-upgraded local SwiftLint can't disagree with CI. To bump SwiftLint, change `SWIFTLINT_VERSION` and fix any new violations in the same PR.
 
 HealthKit has no real data in the simulator. To seed it, temporarily uncomment `addSimulatorData()` in `HealthKitManager` and its call in `DashboardView.task` — never commit it uncommented.
 
