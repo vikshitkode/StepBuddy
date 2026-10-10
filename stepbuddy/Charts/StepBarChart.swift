@@ -48,9 +48,6 @@ struct StepBarChart: View {
             chartView
                 .frame(height: 150)
                 .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
-                .onChange(of: rawSelectedDate) { _, newValue in
-                    print(newValue as Any)
-                }
                 .chartXAxis {
                     AxisMarks {
                         AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
