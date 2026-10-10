@@ -55,7 +55,3 @@ stepbuddy/
 - Every view ends with a `#Preview`; chart previews use `MockData` rather than HealthKit.
 - Keep HealthKit access inside `HealthKitManager`; views should not touch `HKHealthStore` directly.
 - Use `async`/`await` for HealthKit calls; no `try!` (SwiftLint `force_try`). The fetch and add methods throw: `DashboardView` shows a Retry alert when loading fails and `HealthDataListView` an alert when saving fails.
-
-## Known issues
-
-- `fetchWeights` and `fetchWeightsForDifferentials` are near-duplicates.
