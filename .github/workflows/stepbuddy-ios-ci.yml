@@ -16,7 +16,7 @@ jobs:
     name: SwiftLint
     runs-on: macos-26
     env:
-      # Keep in sync with the local Homebrew version (`swiftlint version`)
+      # The only SwiftLint that checks this repo (no Xcode build phase), so bump it here
       SWIFTLINT_VERSION: 0.65.1
 
     steps:
@@ -31,7 +31,7 @@ jobs:
           echo "$RUNNER_TEMP/swiftlint" >> "$GITHUB_PATH"
 
       # Violations show up as annotations on the PR diff. Only errors fail the
-      # job (no --strict), matching the Xcode build.
+      # job (no --strict).
       - name: Lint
         run: swiftlint lint --quiet --reporter github-actions-logging
 
