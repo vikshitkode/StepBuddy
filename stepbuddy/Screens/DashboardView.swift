@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import HealthKit
 import StoreKit
 import TipKit
 
@@ -34,6 +35,7 @@ struct DashboardView: View {
     @State private  var isShowingBMISheet: Bool = false
     @State private var isShowingHealthIntelligenceSheet = false
     @State private var healthIntelligenceStore = HealthIntelligenceStore()
+    @State private var fetchErrorMessage: String?
     private let healthIntelligenceTip = HealthIntelligenceTip()
     
     var isSteps: Bool { selectedStat == .steps }
@@ -82,10 +84,7 @@ struct DashboardView: View {
             }
             
             .task {
-                await hkManager.fetchStepCount()
-                await hkManager.fetchWeights()
-                await hkManager.fetchWeightsForDifferentials()
-                ChartMath.averageWeekdayCount(for: hkManager.stepData)
+                await loadHealthData()
                 // await hkManager.addSimulatorData()
                 isShowingPermissionPrimingSheet = !hasSeenPermissionPriming
             }
@@ -130,7 +129,10 @@ struct DashboardView: View {
             .navigationDestination(for: HealthMetricContext.self) { metric in
                 HealthDataListView(metric: metric)
             }
-            .sheet(isPresented: $isShowingPermissionPrimingSheet) {
+            // Access may have just been granted, so load again when the sheet closes
+            .sheet(isPresented: $isShowingPermissionPrimingSheet, onDismiss: {
+                Task { await loadHealthData() }
+            }) {
                 HealthKitPermissionPrimingView(hasSeen: $hasSeenPermissionPriming)
             }
             .sheet(isPresented: $isShowingBMISheet) {
@@ -139,7 +141,31 @@ struct DashboardView: View {
             .sheet(isPresented: $isShowingHealthIntelligenceSheet) {
                 HealthIntelligenceView(store: healthIntelligenceStore)
             }
+            .alert(
+                "Couldn't Load Health Data",
+                isPresented: Binding(
+                    get: { fetchErrorMessage != nil },
+                    set: { if !$0 { fetchErrorMessage = nil } }
+                )
+            ) {
+                Button("Retry") { Task { await loadHealthData() } }
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(fetchErrorMessage ?? "")
+            }
         }.tint(isSteps ? .pink : .indigo)
+    }
+
+    private func loadHealthData() async {
+        do {
+            try await hkManager.fetchStepCount()
+            try await hkManager.fetchWeights()
+            try await hkManager.fetchWeightsForDifferentials()
+        } catch let error as HKError where error.code == .errorAuthorizationNotDetermined {
+            // First launch: the permission sheet asks for access, and data loads when it closes
+        } catch {
+            fetchErrorMessage = error.localizedDescription
+        }
     }
 }
 

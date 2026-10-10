@@ -123,11 +123,12 @@ struct HealthDataListView: View {
                             do {
                                 if metric == .steps {
                                     try await hkManager.addStepData(for: addDataDate, value: value.rounded())
-                                    await hkManager.fetchStepCount()
+                                    // The save worked; if the refresh fails the list just stays as it was
+                                    try? await hkManager.fetchStepCount()
                                 } else {
                                     try await hkManager.addWeightData(for: addDataDate, value: value)
-                                    await hkManager.fetchWeights()
-                                    await hkManager.fetchWeightsForDifferentials()
+                                    try? await hkManager.fetchWeights()
+                                    try? await hkManager.fetchWeightsForDifferentials()
                                 }
                                 isShowingAddData = false
                             } catch {

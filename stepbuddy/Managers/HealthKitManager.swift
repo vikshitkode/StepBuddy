@@ -21,7 +21,7 @@ class HealthKitManager {
     
     
     /// Fetching the Step Count of the User
-    func fetchStepCount() async {
+    func fetchStepCount() async throws {
         let calender = Calendar.current
         let today = calender.startOfDay(for: .now)
         guard let endDate = calender.date(byAdding: .day, value: 1, to: today) else { return }
@@ -36,20 +36,15 @@ class HealthKitManager {
             intervalComponents: .init(day: 1)
         )
         
-        do {
-            let stepCounts = try await stepsQuery.result(for: store)
-            
-            stepData = stepCounts.statistics().map {
-                .init(date: $0.startDate, value: $0.sumQuantity()?.doubleValue(for: .count()) ?? 0)
-            }
-        } catch {
-            print("No steps data fetched")
+        let stepCounts = try await stepsQuery.result(for: store)
+        stepData = stepCounts.statistics().map {
+            .init(date: $0.startDate, value: $0.sumQuantity()?.doubleValue(for: .count()) ?? 0)
         }
     }
     
     
     /// Fecthing the Weights of the User
-    func fetchWeights() async {
+    func fetchWeights() async throws {
         let calender = Calendar.current
         let today = calender.startOfDay(for: .now)
         guard let endDate = calender.date(byAdding: .day, value: 1, to: today) else { return }
@@ -64,18 +59,14 @@ class HealthKitManager {
             intervalComponents: .init(day: 1)
         )
         
-        do {
-            let weights = try await weightQuery.result(for: store)
-            
-            weightData = weights.statistics().map {
-                .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
-            }
-        } catch {
+        let weights = try await weightQuery.result(for: store)
+        weightData = weights.statistics().map {
+            .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
         }
     }
     
     /// Fecthing the Weights of the User
-    func fetchWeightsForDifferentials() async {
+    func fetchWeightsForDifferentials() async throws {
         let calender = Calendar.current
         let today = calender.startOfDay(for: .now)
         guard let endDate = calender.date(byAdding: .day, value: 1, to: today) else { return }
@@ -90,13 +81,9 @@ class HealthKitManager {
             intervalComponents: .init(day: 1)
         )
         
-        do {
-            let weights = try await weightQuery.result(for: store)
-            
-            weightDiffData = weights.statistics().map {
-                .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
-            }
-        } catch {
+        let weights = try await weightQuery.result(for: store)
+        weightDiffData = weights.statistics().map {
+            .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
         }
     }
     
