@@ -26,7 +26,6 @@ struct HealthIntelligenceTip: Tip {
 /// Dashboard tip shown inline as a card, styled like the chart cards.
 /// The layout lives in `CompactTipCard` so it can be previewed without TipKit.
 struct CompactTipViewStyle: TipViewStyle {
-
     func makeBody(configuration: Configuration) -> some View {
         CompactTipCard(image: configuration.image, title: configuration.title, message: configuration.message) {
             configuration.tip.invalidate(reason: .tipClosed)
@@ -35,7 +34,6 @@ struct CompactTipViewStyle: TipViewStyle {
 }
 
 struct CompactTipCard: View {
-
     let image: Image?
     let title: Text?
     let message: Text?
@@ -83,7 +81,6 @@ struct CompactTipCard: View {
 }
 
 struct HealthIntelligenceView: View {
-
     let store: HealthIntelligenceStore
 
     @Environment(\.dismiss) private var dismiss
@@ -118,7 +115,6 @@ struct HealthIntelligenceView: View {
 
 @available(iOS 26, *)
 private struct HealthInsightsScreen: View {
-
     let insights: HealthInsightsManager
     let steps: [HealthMetric]
     let weights: [HealthMetric]
@@ -171,7 +167,6 @@ private struct HealthInsightsScreen: View {
 
 @available(iOS 26, *)
 private struct InsightsChatView: View {
-
     let insights: HealthInsightsManager
 
     @State private var question = ""
@@ -295,7 +290,6 @@ private struct InsightsChatView: View {
 
 @available(iOS 26, *)
 private struct InsightCard: View {
-
     let insight: HealthInsight.PartiallyGenerated?
     let isGenerating: Bool
 
@@ -342,7 +336,6 @@ private struct InsightCard: View {
 
 
 private struct ChatBubble: View {
-
     let message: ChatMessage
 
     private var isUser: Bool { message.role == .user }
@@ -373,7 +366,6 @@ private struct ChatBubble: View {
 
 /// Animated status shown while the model is generating: in the reply bubble and on the insight card.
 private struct ThinkingIndicator: View {
-
     var phrases = ["Thinking", "Reading your steps", "Checking your weight trend", "Writing a reply"]
     /// What VoiceOver reads instead of the rotating phrases.
     var label = "Generating a reply"

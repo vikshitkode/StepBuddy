@@ -9,7 +9,6 @@ import SwiftUI
 import HealthKitUI
 
 struct HealthKitPermissionPrimingView: View {
-    
     @Environment(HealthKitManager.self) private var hkManager
     @Environment(\.dismiss) private var dismiss
     
@@ -18,42 +17,40 @@ struct HealthKitPermissionPrimingView: View {
     @Binding var hasSeen: Bool
     
     var description: String = """
- This app displays your step and weight data in interactive charts.
- 
- You can also add new step and weight data to Apple Health from this app. Your data is private and secure.
- """
+        This app displays your step and weight data in interactive charts.
+
+        You can also add new step and weight data to Apple Health from this app. Your data is private and secure.
+        """
     
     var body: some View {
-        VStack(spacing: 50){
-                VStack(alignment: .leading, spacing: 10){
-                    
-                    Image(.appleHealth).resizable()
-                        .frame(width: 90, height: 90)
-                        .shadow(color: .gray.opacity(0.5), radius: 16)
-                        .padding(.bottom, 12)
-                    
-                    Text("Apple Health Integration")
-                        .font(.title2)
-                        .bold()
-                    
-                    Text(description)
-                        .foregroundStyle(.secondary)
+        VStack(spacing: 50) {
+            VStack(alignment: .leading, spacing: 10) {
+                Image(.appleHealth).resizable()
+                    .frame(width: 90, height: 90)
+                    .shadow(color: .gray.opacity(0.5), radius: 16)
+                    .padding(.bottom, 12)
+                
+                Text("Apple Health Integration")
+                    .font(.title2)
+                    .bold()
+                
+                Text(description)
+                    .foregroundStyle(.secondary)
+            }
+        
+            if #available(iOS 26.0, *) {
+                Button("Continue") {
+                    isShowingHealthKitPermissions = true
                 }
-            
-                if #available(iOS 26.0, *){
-                    Button("Continue"){
-                        isShowingHealthKitPermissions = true
-                    }
-                    .buttonStyle(.glassProminent)
-                    .tint(.pink)
-                } else {
-                    Button("Continue"){
-                        isShowingHealthKitPermissions = true
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.pink)
+                .buttonStyle(.glassProminent)
+                .tint(.pink)
+            } else {
+                Button("Continue") {
+                    isShowingHealthKitPermissions = true
                 }
-
+                .buttonStyle(.borderedProminent)
+                .tint(.pink)
+            }
         }.padding(30)
             .interactiveDismissDisabled()
             .onAppear {
@@ -67,13 +64,13 @@ struct HealthKitPermissionPrimingView: View {
                 readTypes: hkManager.types,
                 trigger: isShowingHealthKitPermissions) { result in
                     switch result {
-                    case .success(_):
+                    case .success:
                         dismiss()
-                    case .failure(_):
+                    case .failure:
                         // need to handle this case
                         dismiss()
                     }
-                }
+            }
     }
 }
 

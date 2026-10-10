@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct BMICalculatorSheet: View {
-    
     @Environment(\.dismiss) private var dismiss
     
     // Pickers
@@ -110,10 +109,10 @@ struct BMICalculatorSheet: View {
     /// BMI Category
     private func bmiCategory(_ bmi: Double) -> String {
         switch bmi {
-            case ..<18.5: return "Underweight 🙇"
-            case 18.5..<25: return "Normal ✅"
-            case 25..<30: return "Overweight ⚠️"
-            default: return "Obesity 🚩"
+        case ..<18.5: return "Underweight 🙇"
+        case 18.5..<25: return "Normal ✅"
+        case 25..<30: return "Overweight ⚠️"
+        default: return "Obesity 🚩"
         }
     }
 }

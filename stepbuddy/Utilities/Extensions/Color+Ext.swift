@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 extension LinearGradient {
-    
     static var customGradientColor: LinearGradient {
         LinearGradient(
             colors: [
@@ -22,5 +21,4 @@ extension LinearGradient {
             endPoint: .bottomTrailing
         )
     }
-    
 }

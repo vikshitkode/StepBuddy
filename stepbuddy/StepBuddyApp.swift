@@ -10,7 +10,6 @@ import TipKit
 
 @main
 struct StepBuddyApp: App {
-    
     let hkManager = HealthKitManager()
     
     init() {
