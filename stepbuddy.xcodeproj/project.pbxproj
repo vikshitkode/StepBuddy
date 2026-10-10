@@ -10,11 +10,27 @@
 		BFC7783A306069D100A6EA25 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = BFC77839306069D100A6EA25 /* Algorithms */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		BF8288C9307A1B9F00137CB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF8CE8902DC4A06500D23F30 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BF8CE8972DC4A06500D23F30;
+			remoteInfo = stepbuddy;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		BF8288C2307A1B9F00137CB4 /* stepbuddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = stepbuddyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF8CE8982DC4A06500D23F30 /* stepbuddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = stepbuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		BF8288C3307A1B9F00137CB4 /* stepbuddyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = stepbuddyTests;
+			sourceTree = "<group>";
+		};
 		BF8CE89A2DC4A06500D23F30 /* stepbuddy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = stepbuddy;
@@ -23,6 +39,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BF8288BF307A1B9F00137CB4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BF8CE8952DC4A06500D23F30 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -38,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				BF8CE89A2DC4A06500D23F30 /* stepbuddy */,
+				BF8288C3307A1B9F00137CB4 /* stepbuddyTests */,
 				BF8CE8992DC4A06500D23F30 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -46,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				BF8CE8982DC4A06500D23F30 /* stepbuddy.app */,
+				BF8288C2307A1B9F00137CB4 /* stepbuddyTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -53,6 +78,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BF8288C1307A1B9F00137CB4 /* stepbuddyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF8288C8307A1B9F00137CB4 /* Build configuration list for PBXNativeTarget "stepbuddyTests" */;
+			buildPhases = (
+				BF8288BE307A1B9F00137CB4 /* Sources */,
+				BF8288BF307A1B9F00137CB4 /* Frameworks */,
+				BF8288C0307A1B9F00137CB4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BF8288CA307A1B9F00137CB4 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BF8288C3307A1B9F00137CB4 /* stepbuddyTests */,
+			);
+			name = stepbuddyTests;
+			packageProductDependencies = (
+			);
+			productName = stepbuddyTests;
+			productReference = BF8288C2307A1B9F00137CB4 /* stepbuddyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		BF8CE8972DC4A06500D23F30 /* stepbuddy */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF8CE8A32DC4A06700D23F30 /* Build configuration list for PBXNativeTarget "stepbuddy" */;
@@ -83,9 +131,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1630;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
+					BF8288C1307A1B9F00137CB4 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = BF8CE8972DC4A06500D23F30;
+					};
 					BF8CE8972DC4A06500D23F30 = {
 						CreatedOnToolsVersion = 16.3;
 					};
@@ -109,11 +161,19 @@
 			projectRoot = "";
 			targets = (
 				BF8CE8972DC4A06500D23F30 /* stepbuddy */,
+				BF8288C1307A1B9F00137CB4 /* stepbuddyTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BF8288C0307A1B9F00137CB4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BF8CE8962DC4A06500D23F30 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,6 +184,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BF8288BE307A1B9F00137CB4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BF8CE8942DC4A06500D23F30 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,7 +200,55 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		BF8288CA307A1B9F00137CB4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BF8CE8972DC4A06500D23F30 /* stepbuddy */;
+			targetProxy = BF8288C9307A1B9F00137CB4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		BF8288C6307A1B9F00137CB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 29G9F8888P;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vikshitkode.stepbuddyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/stepbuddy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/stepbuddy";
+			};
+			name = Debug;
+		};
+		BF8288C7307A1B9F00137CB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 29G9F8888P;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vikshitkode.stepbuddyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/stepbuddy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/stepbuddy";
+			};
+			name = Release;
+		};
 		BF8CE8A12DC4A06700D23F30 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -328,6 +443,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BF8288C8307A1B9F00137CB4 /* Build configuration list for PBXNativeTarget "stepbuddyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF8288C6307A1B9F00137CB4 /* Debug */,
+				BF8288C7307A1B9F00137CB4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BF8CE8932DC4A06500D23F30 /* Build configuration list for PBXProject "stepbuddy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

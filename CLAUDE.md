@@ -9,18 +9,23 @@ StepBuddy is a SwiftUI iOS app that reads step count and body weight from Apple 
 - Single app target `stepbuddy`, bundle ID `com.vikshitkode.stepbuddy`
 - iOS deployment target 18.x, Swift 5 language mode
 - Only dependency: [swift-algorithms](https://github.com/apple/swift-algorithms) (SPM, used for `chunked` in `ChartMath`)
-- No test target exists yet
+- Unit tests: `stepbuddyTests` (Swift Testing), hosted in the app so they can `@testable import stepbuddy`
 
-## Build
+## Build and test
 
 ```sh
 xcodebuild build \
   -project stepbuddy.xcodeproj \
   -scheme stepbuddy \
   -destination 'generic/platform=iOS Simulator'
+
+xcodebuild test \
+  -project stepbuddy.xcodeproj \
+  -scheme stepbuddy \
+  -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-CI (`.github/workflows/`) runs the same build on `macos-26` for pushes and PRs to `main`, using the newest stable Xcode installed on the runner. There is no test step. GitHub's runners can lag behind the local Xcode (e.g. still Xcode 26 while developing on 27), so code using newer-SDK-only types must be guarded with `#if compiler(...)`, not just `#available`.
+CI (`.github/workflows/`) runs `xcodebuild test` (which also builds the app) in the required `Build` job on `macos-26` for pushes and PRs to `main`, using the newest stable Xcode installed on the runner and an iPhone simulator from its newest iOS runtime. GitHub's runners can lag behind the local Xcode (e.g. still Xcode 26 while developing on 27), so code using newer-SDK-only types must be guarded with `#if compiler(...)`, not just `#available`.
 
 ## Linting
 
@@ -40,6 +45,7 @@ stepbuddy/
   Charts/                   Chart views + ChartMath (weekday averages, weight diffs) + ChartDataTypes
   Screens/                  DashboardView (root), HealthDataListView, BMI sheet, permission priming, HealthIntelligenceView
   Utilities/                MockData (for #Previews), HealthDataSummary (data → model prompt text), Date/Color extensions
+stepbuddyTests/             Swift Testing unit tests for the pure logic (ChartMath, HealthDataSummary)
 ```
 
 - **State:** one `HealthKitManager` instance is shared through SwiftUI's `@Environment(HealthKitManager.self)`. It exposes `stepData`, `weightData`, `weightDiffData` arrays that views read directly.
@@ -53,5 +59,6 @@ stepbuddy/
 
 - The Xcode project uses file-system-synchronized groups: new files under `stepbuddy/` are picked up automatically, no `project.pbxproj` edits needed.
 - Every view ends with a `#Preview`; chart previews use `MockData` rather than HealthKit.
+- Tests use fixed dates from `TestDates` and build expected numbers with the same `FormatStyle` as the code, so they pass in any locale.
 - Keep HealthKit access inside `HealthKitManager`; views should not touch `HKHealthStore` directly.
 - Use `async`/`await` for HealthKit calls; no `try!` (SwiftLint `force_try`). The fetch and add methods throw: `DashboardView` shows a Retry alert when loading fails and `HealthDataListView` an alert when saving fails.
