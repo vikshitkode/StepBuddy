@@ -22,6 +22,12 @@ struct WeightLineChart: View {
     var minValue: Double {
         chartData.map { $0.value }.min() ?? 0
     }
+
+    var avgWeight: Double {
+        guard !chartData.isEmpty else { return 0 }
+        let totalWeight = chartData.reduce(0) { $0 + $1.value }
+        return totalWeight / Double(chartData.count)
+    }
     
     var body: some View {
         VStack {
@@ -31,7 +37,7 @@ struct WeightLineChart: View {
                         Label("Weight", systemImage: "figure")
                             .font(.title3.bold())
                             .foregroundStyle(.indigo)
-                        Text("Avg: 180 lbs")
+                        Text("Avg: \(avgWeight, format: .number.precision(.fractionLength(1))) lbs")
                             .font(.caption)
                     }
                     Spacer()
