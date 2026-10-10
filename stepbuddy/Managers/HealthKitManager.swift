@@ -22,69 +22,46 @@ class HealthKitManager {
     
     /// Fetching the Step Count of the User
     func fetchStepCount() async throws {
-        let calender = Calendar.current
-        let today = calender.startOfDay(for: .now)
-        guard let endDate = calender.date(byAdding: .day, value: 1, to: today) else { return }
-        let startDate = calender.date(byAdding: .day, value: -28, to: endDate)
-        
-        let queryPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
-        let samplePredicate = HKSamplePredicate.quantitySample(type: HKQuantityType(.stepCount), predicate: queryPredicate)
-        let stepsQuery = HKStatisticsCollectionQueryDescriptor(
-            predicate: samplePredicate,
-            options: .cumulativeSum,
-            anchorDate: endDate,
-            intervalComponents: .init(day: 1)
-        )
-        
-        let stepCounts = try await stepsQuery.result(for: store)
-        stepData = stepCounts.statistics().map {
+        let stepCounts = try await dailyStatistics(for: HKQuantityType(.stepCount), options: .cumulativeSum, days: 28)
+        stepData = stepCounts.map {
             .init(date: $0.startDate, value: $0.sumQuantity()?.doubleValue(for: .count()) ?? 0)
         }
     }
     
-    
-    /// Fecthing the Weights of the User
+    /// Fetching the Weights of the User
     func fetchWeights() async throws {
-        let calender = Calendar.current
-        let today = calender.startOfDay(for: .now)
-        guard let endDate = calender.date(byAdding: .day, value: 1, to: today) else { return }
-        let startDate = calender.date(byAdding: .day, value: -28, to: endDate)
-        
-        let queryPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
-        let samplePredicate = HKSamplePredicate.quantitySample(type: HKQuantityType(.bodyMass), predicate: queryPredicate)
-        let weightQuery = HKStatisticsCollectionQueryDescriptor(
-            predicate: samplePredicate,
-            options: .mostRecent,
-            anchorDate: endDate,
-            intervalComponents: .init(day: 1)
-        )
-        
-        let weights = try await weightQuery.result(for: store)
-        weightData = weights.statistics().map {
+        weightData = try await dailyWeights(days: 28)
+    }
+    
+    /// Fetching the Weights of the User, plus one earlier day so the first day has a previous weight to diff against
+    func fetchWeightsForDifferentials() async throws {
+        weightDiffData = try await dailyWeights(days: 29)
+    }
+    
+    private func dailyWeights(days: Int) async throws -> [HealthMetric] {
+        let weights = try await dailyStatistics(for: HKQuantityType(.bodyMass), options: .mostRecent, days: days)
+        return weights.map {
             .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
         }
     }
     
-    /// Fecthing the Weights of the User
-    func fetchWeightsForDifferentials() async throws {
-        let calender = Calendar.current
-        let today = calender.startOfDay(for: .now)
-        guard let endDate = calender.date(byAdding: .day, value: 1, to: today) else { return }
-        let startDate = calender.date(byAdding: .day, value: -29, to: endDate)
+    /// One statistics value per day for the last `days` days, today included
+    private func dailyStatistics(for type: HKQuantityType, options: HKStatisticsOptions, days: Int) async throws -> [HKStatistics] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        guard let endDate = calendar.date(byAdding: .day, value: 1, to: today) else { return [] }
+        let startDate = calendar.date(byAdding: .day, value: -days, to: endDate)
         
         let queryPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
-        let samplePredicate = HKSamplePredicate.quantitySample(type: HKQuantityType(.bodyMass), predicate: queryPredicate)
-        let weightQuery = HKStatisticsCollectionQueryDescriptor(
+        let samplePredicate = HKSamplePredicate.quantitySample(type: type, predicate: queryPredicate)
+        let query = HKStatisticsCollectionQueryDescriptor(
             predicate: samplePredicate,
-            options: .mostRecent,
+            options: options,
             anchorDate: endDate,
             intervalComponents: .init(day: 1)
         )
         
-        let weights = try await weightQuery.result(for: store)
-        weightDiffData = weights.statistics().map {
-            .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
-        }
+        return try await query.result(for: store).statistics()
     }
     
     /// Req auth to Read and Write Data
