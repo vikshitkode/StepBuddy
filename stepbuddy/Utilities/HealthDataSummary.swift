@@ -14,7 +14,7 @@ enum HealthDataSummary {
         steps.contains { $0.value > 0 } || weights.contains { $0.value > 0 }
     }
 
-    static func promptText(steps: [HealthMetric], weights: [HealthMetric]) -> String {
+    static func promptText(steps: [HealthMetric], weights: [HealthMetric], stepGoal: StepGoalStatus? = nil) -> String {
         // Days without steps come back from HealthKit as 0 (weights already skip missing days)
         let steps = steps.filter { $0.value > 0 }.sorted { $0.date < $1.date }
         let weights = weights.filter { $0.value > 0 }.sorted { $0.date < $1.date }
@@ -28,6 +28,9 @@ enum HealthDataSummary {
         lines.append("")
         lines.append("STEPS")
         lines.append(contentsOf: stepStats(for: steps))
+        if let stepGoal, !steps.isEmpty {
+            lines.append(contentsOf: goalStats(for: steps, stepGoal: stepGoal))
+        }
 
         lines.append("")
         lines.append("WEIGHT (lb)")
@@ -75,6 +78,14 @@ enum HealthDataSummary {
         return lines
     }
 
+    private static func goalStats(for steps: [HealthMetric], stepGoal: StepGoalStatus) -> [String] {
+        let daysMet = StepStreak.daysMet(steps: steps, goal: stepGoal.goal)
+        return [
+            "Daily step goal: \(format(stepGoal.goal)) steps, reached on \(daysMet) of the \(steps.count) days with data",
+            "Goal streak: \(days(stepGoal.currentStreak)) in a row (best in the last year: \(days(stepGoal.bestStreak)))"
+        ]
+    }
+
     private static func weightStats(for weights: [HealthMetric]) -> [String] {
         guard let first = weights.first, let latest = weights.last,
               let highest = weights.max(by: { $0.value < $1.value }),
@@ -108,6 +119,10 @@ enum HealthDataSummary {
 
     private static func average(of metrics: some Collection<HealthMetric>) -> Double {
         metrics.reduce(0) { $0 + $1.value } / Double(metrics.count)
+    }
+
+    private static func days(_ count: Int) -> String {
+        count == 1 ? "1 day" : "\(count) days"
     }
 
     private static func dayTitle(_ date: Date) -> String {

@@ -81,6 +81,23 @@ struct HealthDataSummaryTests {
         #expect(section("STEPS", in: text).contains(expected))
     }
 
+    @Test func promptTextIncludesTheStepGoal() {
+        let steps = [metric(0, 12_000), metric(1, 4_000), metric(2, 10_000)]
+        let stepGoal = StepGoalStatus(goal: 10_000, history: steps, today: TestDates.day(2))
+        let text = HealthDataSummary.promptText(steps: steps, weights: [], stepGoal: stepGoal)
+        let stepLines = section("STEPS", in: text)
+
+        #expect(stepLines.contains("Daily step goal: \(number(10_000)) steps, reached on 2 of the 3 days with data"))
+        #expect(stepLines.contains("Goal streak: 1 day in a row (best in the last year: 1 day)"))
+    }
+
+    @Test func promptTextLeavesOutTheGoalWithoutStepData() {
+        let stepGoal = StepGoalStatus(goal: 10_000, history: [], today: TestDates.day(0))
+        let text = HealthDataSummary.promptText(steps: [], weights: [], stepGoal: stepGoal)
+
+        #expect(section("STEPS", in: text) == ["No step data."])
+    }
+
     @Test func promptTextSummarizesWeights() {
         let text = HealthDataSummary.promptText(
             steps: [],

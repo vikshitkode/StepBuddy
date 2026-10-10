@@ -29,10 +29,12 @@ struct DashboardView: View {
     @Environment(HealthKitManager.self) private var hkManager
     
     @AppStorage("hasSeenPermissionPriming") private var hasSeenPermissionPriming: Bool = false
+    @AppStorage(StepGoal.storageKey) private var dailyStepGoal = StepGoal.defaultValue
     
     @State private var isShowingPermissionPrimingSheet: Bool = false
     @State private var selectedStat: HealthMetricContext = .steps
     @State private  var isShowingBMISheet: Bool = false
+    @State private var isShowingStepGoalSheet = false
     @State private var isShowingHealthIntelligenceSheet = false
     @State private var healthIntelligenceStore = HealthIntelligenceStore()
     @State private var fetchErrorMessage: String?
@@ -63,7 +65,10 @@ struct DashboardView: View {
                     
                     switch selectedStat {
                     case .steps:
-                        StepBarChart(selectedStat: selectedStat, chartData: hkManager.stepData)
+                        StepGoalCard(status: StepGoalStatus(goal: dailyStepGoal, history: hkManager.stepHistory)) {
+                            isShowingStepGoalSheet = true
+                        }
+                        StepBarChart(selectedStat: selectedStat, chartData: hkManager.stepData, goal: Double(dailyStepGoal))
                         StepPieChart(chartData: ChartMath.averageWeekdayCount(for: hkManager.stepData))
                     case .weight:
                         WeightLineChart(selectedStat: selectedStat, chartData: hkManager.weightData)
@@ -135,6 +140,9 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $isShowingBMISheet) {
                 BMICalculatorSheet()
+            }
+            .sheet(isPresented: $isShowingStepGoalSheet) {
+                StepGoalSheet(goal: $dailyStepGoal)
             }
             .sheet(isPresented: $isShowingHealthIntelligenceSheet) {
                 HealthIntelligenceView(store: healthIntelligenceStore)

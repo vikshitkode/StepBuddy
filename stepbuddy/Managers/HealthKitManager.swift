@@ -16,16 +16,23 @@ class HealthKitManager {
     let types: Set = [HKQuantityType(.stepCount), HKQuantityType(.bodyMass)]
     
     var stepData: [HealthMetric] = []
+    /// Daily step totals for the last year, for goal streaks. `stepData` is its last 28 days.
+    var stepHistory: [HealthMetric] = []
     var weightData: [HealthMetric] = []
     var weightDiffData: [HealthMetric] = []
     
     
-    /// Fetching the Step Count of the User
+    /// Fetching the Step Count of the User: a year of history in one query, of which the charts show 28 days
     func fetchStepCount() async throws {
-        let stepCounts = try await dailyStatistics(for: HKQuantityType(.stepCount), options: .cumulativeSum, days: 28)
-        stepData = stepCounts.map {
+        let stepCounts = try await dailyStatistics(for: HKQuantityType(.stepCount), options: .cumulativeSum, days: 365)
+        stepHistory = stepCounts.map {
             .init(date: $0.startDate, value: $0.sumQuantity()?.doubleValue(for: .count()) ?? 0)
         }
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        guard let chartStart = calendar.date(byAdding: .day, value: -27, to: today) else { return }
+        stepData = stepHistory.filter { $0.date >= chartStart }
     }
     
     /// Fetching the Weights of the User
