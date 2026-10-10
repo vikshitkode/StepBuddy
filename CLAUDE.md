@@ -25,7 +25,7 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-CI (`.github/workflows/`) runs `xcodebuild test` (which also builds the app) in the required `Build` job on `macos-26` for pushes and PRs to `main`, using the newest stable Xcode installed on the runner and an iPhone simulator from its newest iOS runtime. GitHub's runners can lag behind the local Xcode (e.g. still Xcode 26 while developing on 27), so code using newer-SDK-only types must be guarded with `#if compiler(...)`, not just `#available`.
+CI (`.github/workflows/`) runs on `macos-26` for pushes and PRs to `main` with the newest stable Xcode installed on the runner. Three jobs run in parallel and are all required checks on `main`: `SwiftLint`, `Build` (the build command above) and `Test` (`xcodebuild test` on an iPhone simulator from the runner's newest iOS runtime). GitHub's runners can lag behind the local Xcode (e.g. still Xcode 26 while developing on 27), so code using newer-SDK-only types must be guarded with `#if compiler(...)`, not just `#available`.
 
 ## Linting
 

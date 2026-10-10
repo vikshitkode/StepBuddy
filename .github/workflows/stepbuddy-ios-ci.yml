@@ -48,7 +48,7 @@ jobs:
       # Xcode installed (betas and RCs are skipped), so CI moves to Xcode 27 as
       # soon as GitHub adds it to the image.
       - name: Select latest Xcode
-        run: |
+        run: &select-xcode |
           XCODE=$(ls -d /Applications/Xcode_*.app \
             | grep -E '/Xcode_[0-9]+(\.[0-9]+)*\.app$' \
             | sort -V \
@@ -56,10 +56,31 @@ jobs:
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
+      # A build doesn't need a booted simulator, so build for the generic
+      # destination (same command as CLAUDE.md) instead of picking a device
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project stepbuddy.xcodeproj \
+            -scheme stepbuddy \
+            -destination 'generic/platform=iOS Simulator'
+
+  # Runs in parallel with Build on its own runner, so a failing test shows up
+  # as its own check on the PR
+  test:
+    name: Test
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select latest Xcode
+        run: *select-xcode
+
       # Tests need a real simulator. Pick an iPhone from the newest iOS runtime on
       # the image rather than hardcoding a name that changes with every Xcode.
-      # `xcodebuild test` builds the app too, so there's no separate build step.
-      - name: Build and test
+      - name: Test
         run: |
           UDID=$(xcrun simctl list devices available --json | jq -r '
             [.devices | to_entries[] | select(.key | test("SimRuntime.iOS-"))
