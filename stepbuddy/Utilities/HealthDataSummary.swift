@@ -15,7 +15,7 @@ enum HealthDataSummary {
     }
 
     static func promptText(steps: [HealthMetric], weights: [HealthMetric]) -> String {
-        // Days without a reading come back from HealthKit as 0
+        // Days without steps come back from HealthKit as 0 (weights already skip missing days)
         let steps = steps.filter { $0.value > 0 }.sorted { $0.date < $1.date }
         let weights = weights.filter { $0.value > 0 }.sorted { $0.date < $1.date }
 
