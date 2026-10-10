@@ -62,14 +62,11 @@ struct HealthKitPermissionPrimingView: View {
                 store: hkManager.store,
                 shareTypes: hkManager.types,
                 readTypes: hkManager.types,
-                trigger: isShowingHealthKitPermissions) { result in
-                    switch result {
-                    case .success:
-                        dismiss()
-                    case .failure:
-                        // need to handle this case
-                        dismiss()
-                    }
+                trigger: isShowingHealthKitPermissions) { _ in
+                    // Close either way: the dashboard reloads when the sheet closes and shows
+                    // an alert if it still can't read Health data. The completion isn't
+                    // main-actor isolated, so hop back to dismiss.
+                    Task { @MainActor in dismiss() }
             }
     }
 }

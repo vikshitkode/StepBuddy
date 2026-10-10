@@ -7,7 +7,7 @@ This file guides Claude Code (claude.ai/code) when working in this repository.
 StepBuddy is a SwiftUI iOS app that reads step count and body weight from Apple Health (HealthKit) and visualizes the last 28 days with Swift Charts. Users can also write step/weight entries back to Health.
 
 - Single app target `stepbuddy`, bundle ID `com.vikshitkode.stepbuddy`
-- iOS deployment target 18.x, Swift 5 language mode
+- iOS deployment target 18.x, Swift 6 language mode (complete data-race checking; keep it warning-free)
 - Only dependency: [swift-algorithms](https://github.com/apple/swift-algorithms) (SPM, used for `chunked` in `ChartMath`)
 - Unit tests: `stepbuddyTests` (Swift Testing), hosted in the app so they can `@testable import stepbuddy`
 
@@ -38,7 +38,7 @@ HealthKit has no real data in the simulator. To seed it, temporarily uncomment `
 ```
 stepbuddy/
   StepBuddyApp.swift        App entry; creates HealthKitManager, injects via .environment; configures TipKit
-  Managers/HealthKitManager.swift  @Observable; all HealthKit auth, queries and writes
+  Managers/HealthKitManager.swift  @MainActor @Observable; all HealthKit auth, queries and writes
   Managers/HealthInsightsManager.swift  @Observable, iOS 26+; all Foundation Models sessions (insight card + chat)
   Model/HealthMetric.swift  { date, value } — one data point per day
   Model/HealthInsight.swift @Generable insight (summary, 3 highlights, suggestion) + ChatMessage
@@ -48,7 +48,7 @@ stepbuddy/
 stepbuddyTests/             Swift Testing unit tests for the pure logic (ChartMath, HealthDataSummary)
 ```
 
-- **State:** one `HealthKitManager` instance is shared through SwiftUI's `@Environment(HealthKitManager.self)`. It exposes `stepData`, `weightData`, `weightDiffData` arrays that views read directly.
+- **State:** one `HealthKitManager` instance is shared through SwiftUI's `@Environment(HealthKitManager.self)`. It exposes `stepData`, `weightData`, `weightDiffData` arrays that views read directly. It is `@MainActor`, so views call it without crossing actors; HealthKit does its work off the main thread inside the awaited queries.
 - **Data fetching:** `HKStatisticsCollectionQueryDescriptor` with daily intervals over the last 28 days (29 for weight diffs, so the first day has a predecessor). Steps use `.cumulativeSum`, weight uses `.mostRecent`. Fetches run in `DashboardView`'s `.task`.
 - **Navigation:** `HealthMetricContext` (`.steps` / `.weight`) drives the segmented picker, theme color (pink for steps, indigo for weight) and `navigationDestination` to `HealthDataListView`.
 - **Permissions:** `HealthKitPermissionPrimingView` is shown once (`@AppStorage("hasSeenPermissionPriming")`) before requesting HealthKit authorization. Usage strings live in build settings (`INFOPLIST_KEY_NSHealth*UsageDescription`), not an Info.plist file.

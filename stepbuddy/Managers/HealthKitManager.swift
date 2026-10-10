@@ -9,7 +9,7 @@ import Foundation
 import HealthKit
 import Observation
 
-@Observable
+@MainActor @Observable
 class HealthKitManager {
     let store = HKHealthStore()
     
