@@ -58,5 +58,4 @@ stepbuddy/
 
 ## Known issues
 
-- `WeightLineChart` shows a hardcoded "Avg: 180 lbs".
 - `fetchWeights` and `fetchWeightsForDifferentials` are near-duplicates and silently ignore errors.
