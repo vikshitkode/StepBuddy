@@ -56,11 +56,22 @@ jobs:
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
-      # A build doesn't need a booted simulator, so build for the generic
-      # destination (same command as CLAUDE.md) instead of picking a device
-      - name: Build
+      # Tests need a real simulator. Pick an iPhone from the newest iOS runtime on
+      # the image rather than hardcoding a name that changes with every Xcode.
+      # `xcodebuild test` builds the app too, so there's no separate build step.
+      - name: Build and test
         run: |
-          xcodebuild build \
+          UDID=$(xcrun simctl list devices available --json | jq -r '
+            [.devices | to_entries[] | select(.key | test("SimRuntime.iOS-"))
+             | .key as $runtime | .value[] | select(.name | startswith("iPhone"))
+             | {udid, version: ($runtime | capture("iOS-(?<v>[0-9-]+)").v | split("-") | map(tonumber))}]
+            | sort_by(.version) | last | .udid')
+          if [ -z "$UDID" ] || [ "$UDID" = null ]; then
+            echo "::error::No iPhone simulator found on this runner"
+            exit 1
+          fi
+          xcrun simctl list devices | grep "$UDID"
+          xcodebuild test \
             -project stepbuddy.xcodeproj \
             -scheme stepbuddy \
-            -destination 'generic/platform=iOS Simulator'
+            -destination "id=$UDID"
