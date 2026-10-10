@@ -94,7 +94,6 @@ struct DashboardView: View {
                     ToolbarItem {
                         Button {
                             isShowingBMISheet = true
-                            print("BMI button tapped")
                         } label: {
                             Image(systemName: "gauge.with.dots.needle.67percent")
                         }
@@ -105,7 +104,6 @@ struct DashboardView: View {
                     Button {
                         isShowingHealthIntelligenceSheet = true
                         healthIntelligenceTip.invalidate(reason: .actionPerformed)
-                        print("Health Intelligence tapped")
                     } label: {
                         LinearGradient.customGradientColor
                             .frame(width: 24, height: 24)

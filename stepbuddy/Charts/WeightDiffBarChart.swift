@@ -37,9 +37,6 @@ struct WeightDiffBarChart: View {
             chartView
                 .frame(height: 150)
                 .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
-                .onChange(of: rawSelectedDate) { _, newValue in
-                    print(newValue as Any)
-                }
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .day)) {
                         AxisValueLabel(format: .dateTime.weekday(), centered: true)
