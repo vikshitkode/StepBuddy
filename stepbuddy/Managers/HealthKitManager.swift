@@ -38,10 +38,11 @@ class HealthKitManager {
         weightDiffData = try await dailyWeights(days: 29)
     }
     
+    /// Days without a weigh-in are left out rather than reported as 0 lb
     private func dailyWeights(days: Int) async throws -> [HealthMetric] {
         let weights = try await dailyStatistics(for: HKQuantityType(.bodyMass), options: .mostRecent, days: days)
-        return weights.map {
-            .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
+        return weights.compactMap { day in
+            day.mostRecentQuantity().map { .init(date: day.startDate, value: $0.doubleValue(for: .pound())) }
         }
     }
     
