@@ -57,6 +57,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF8CE8A32DC4A06700D23F30 /* Build configuration list for PBXNativeTarget "stepbuddy" */;
 			buildPhases = (
+				BF84E6F1307A08FB00855145 /* SwiftLint */,
 				BF8CE8942DC4A06500D23F30 /* Sources */,
 				BF8CE8952DC4A06500D23F30 /* Frameworks */,
 				BF8CE8962DC4A06500D23F30 /* Resources */,
@@ -122,6 +123,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BF84E6F1307A08FB00855145 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# CI lints in a separate job (.github/workflows/stepbuddy-ios-ci.yml)\nif [ \"$CI\" = \"true\" ]; then\n    exit 0\nfi\n\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n    # Auto-correct what SwiftLint can, then report the rest in Xcode\n    swiftlint --fix --quiet\n    swiftlint --quiet\nelse\n    echo \"warning: SwiftLint not installed, run: brew install swiftlint\"\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BF8CE8942DC4A06500D23F30 /* Sources */ = {
@@ -266,6 +290,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 29G9F8888P;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Step Buddy";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
@@ -301,6 +326,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 29G9F8888P;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Step Buddy";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";

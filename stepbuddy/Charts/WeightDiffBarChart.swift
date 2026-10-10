@@ -41,13 +41,12 @@ struct WeightDiffBarChart: View {
                     print(newValue as Any)
                 }
                 .chartXAxis {
-                    
                     AxisMarks(values: .stride(by: .day)) {
                         AxisValueLabel(format: .dateTime.weekday(), centered: true)
                     }
                 }
                 .chartYAxis {
-                    AxisMarks { value in
+                    AxisMarks { _ in
                         AxisGridLine().foregroundStyle(Color.secondary.opacity(0.3))
                         AxisValueLabel()
                     }
@@ -62,13 +61,12 @@ struct WeightDiffBarChart: View {
     }
 
 
-    @ViewBuilder
-    private var chartView: some View {
-        
+    @ViewBuilder private var chartView: some View {
         if chartData.isEmpty {
             EmptyStateCard(
                 title: "No Weight Data",
-                message: "Add weight entries in this App or enable Apple Health access to see your trends here.", color: .indigo
+                message: "Add weight entries in this App or enable Apple Health access to see your trends here.",
+                color: .indigo
             )
             .frame(maxWidth: .infinity, minHeight: 150)
         } else {
@@ -99,8 +97,10 @@ struct WeightDiffBarChart: View {
 
     private var annotationView: some View {
         VStack(alignment: .leading) {
-            Text(selectedData?.date ?? .now,
-                 format: .dateTime.weekday(.abbreviated).month(.abbreviated).day())
+            Text(
+                selectedData?.date ?? .now,
+                format: .dateTime.weekday(.abbreviated).month(.abbreviated).day()
+            )
                 .font(.footnote.bold())
                 .foregroundStyle(.secondary)
 

@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct MockData {
+enum MockData {
     /// MOCK Data for Steps
     static var steps: [HealthMetric] {
         var array: [HealthMetric] = []
         
         for i in 0..<28 {
             let metric = HealthMetric(
-                date: Calendar.current.date(byAdding: .day, value: -i, to: .now)!,
+                date: Calendar.current.date(byAdding: .day, value: -i, to: .now) ?? .now,
                 value: .random(in: 4_000...15_000)
             )
             
@@ -29,8 +29,8 @@ struct MockData {
         
         for i in 0..<28 {
             let metric = HealthMetric(
-                date: Calendar.current.date(byAdding: .day, value: -i, to: .now)!,
-                value: .random(in: (160 + Double(i/3)...165 + Double(i/3)))
+                date: Calendar.current.date(byAdding: .day, value: -i, to: .now) ?? .now,
+                value: .random(in: (160 + Double(i / 3)...165 + Double(i / 3)))
             )
             
             array.append(metric)
@@ -43,7 +43,7 @@ struct MockData {
         var array: [WeekDayChartData] = []
         
         for i in 0..<7 {
-            let diff = WeekDayChartData(date: Calendar.current.date(byAdding: .day, value: -i, to: .now)!, value: .random(in: -3...3))
+            let diff = WeekDayChartData(date: Calendar.current.date(byAdding: .day, value: -i, to: .now) ?? .now, value: .random(in: -3...3))
             
             array.append(diff)
         }

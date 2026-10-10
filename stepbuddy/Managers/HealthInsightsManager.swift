@@ -14,7 +14,6 @@ import Observation
 @MainActor
 @Observable
 final class HealthInsightsManager {
-
     let model = SystemLanguageModel.default
 
     var insight: HealthInsight.PartiallyGenerated?
@@ -163,7 +162,6 @@ final class HealthInsightsManager {
 /// The app targets iOS 18, so the iOS 26-only manager is stored type-erased.
 @MainActor
 final class HealthIntelligenceStore {
-
     private var storage: AnyObject?
 
     @available(iOS 26, *)

@@ -9,8 +9,7 @@ import SwiftUI
 import Charts
 
 struct StepPieChart: View {
-    
-    @State private var rawSelectedChartValue: Double? = nil
+    @State private var rawSelectedChartValue: Double?
     @State private var isInteracting: Bool = false
 
     
@@ -30,8 +29,8 @@ struct StepPieChart: View {
     var chartData: [WeekDayChartData]
     
     var body: some View {
-        VStack(alignment: .leading){
-            VStack(alignment: .leading){
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading) {
                 Label("Averages", systemImage: "calendar").font(.title3.bold()).foregroundStyle(.pink)
                 Text("Last 28 days").font(.caption).foregroundStyle(.secondary)
             }
@@ -40,18 +39,18 @@ struct StepPieChart: View {
             if chartData.isEmpty {
                 EmptyStateCard(
                     title: "No Step Data",
-                    message: "Add Step entries in this App or enable Apple Health access to see your trends here.", color: .pink
+                    message: "Add Step entries in this App or enable Apple Health access to see your trends here.",
+                    color: .pink
                 )
                 .frame(maxWidth: .infinity, minHeight: 150)
             } else {
-                
                 if !isInteracting {
-                        Text("Touch a slice to see details")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.bottom, 4)
-                            .transition(.opacity)
+                    Text("Touch a slice to see details")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 4)
+                        .transition(.opacity)
                 }
                 
                 Chart {
@@ -73,7 +72,7 @@ struct StepPieChart: View {
                 }
                 .chartAngleSelection(value: $rawSelectedChartValue.animation(.easeInOut))
                 .frame(height: 240)
-                .onChange(of: rawSelectedChartValue) { oldValue, newValue in
+                .onChange(of: rawSelectedChartValue) { _, newValue in
                     if newValue != nil { isInteracting = true } else { isInteracting = false }
                 }
                 .chartBackground { proxy in

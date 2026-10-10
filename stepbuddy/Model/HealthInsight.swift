@@ -11,7 +11,6 @@ import FoundationModels
 @available(iOS 26, *)
 @Generable
 struct HealthInsight {
-
     @Guide(description: "A one or two sentence overview of the user's steps and weight over the period")
     var summary: String
 
@@ -23,7 +22,6 @@ struct HealthInsight {
 }
 
 struct ChatMessage: Identifiable, Equatable {
-
     enum Role {
         case user, assistant
     }

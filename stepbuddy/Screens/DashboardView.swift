@@ -25,7 +25,6 @@ enum HealthMetricContext: CaseIterable, Identifiable {
 }
 
 struct DashboardView: View {
-    
     @Environment(HealthKitManager.self) private var hkManager
     
     @AppStorage("hasSeenPermissionPriming") private var hasSeenPermissionPriming: Bool = false
@@ -46,8 +45,7 @@ struct DashboardView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                
-                VStack(spacing: 25){
+                VStack(spacing: 25) {
                     // Inline instead of a popover: on iOS 26 the popover's Liquid Glass bubble
                     // can't be made opaque, and the large title showed through it
                     TipView(healthIntelligenceTip)
@@ -69,7 +67,7 @@ struct DashboardView: View {
                         WeightLineChart(selectedStat: selectedStat, chartData: hkManager.weightData)
                         WeightDiffBarChart(chartData: ChartMath.avgDailyWeightDiff(for: hkManager.weightDiffData))
                         
-                        VStack(spacing: 30){
+                        VStack(spacing: 30) {
                             Spacer()
                             /// App Review
                             Button("Leave us a Review!") {
@@ -80,9 +78,7 @@ struct DashboardView: View {
                             .foregroundStyle(.indigo)
                         }
                     }
-                    
                 }.padding()
-                
             }
             
             .task {
@@ -90,19 +86,19 @@ struct DashboardView: View {
                 await hkManager.fetchWeights()
                 await hkManager.fetchWeightsForDifferentials()
                 ChartMath.averageWeekdayCount(for: hkManager.stepData)
-//                await hkManager.addSimulatorData()
+                // await hkManager.addSimulatorData()
                 isShowingPermissionPrimingSheet = !hasSeenPermissionPriming
             }
             .navigationTitle("Dashboard")
             .toolbar {
                 if selectedStat == .weight {
                     ToolbarItem {
-                            Button {
-                                isShowingBMISheet = true
-                                print("BMI button tapped")
-                            } label: {
-                                Image(systemName: "gauge.with.dots.needle.67percent")
-                            }
+                        Button {
+                            isShowingBMISheet = true
+                            print("BMI button tapped")
+                        } label: {
+                            Image(systemName: "gauge.with.dots.needle.67percent")
+                        }
                     }
                 }
                 
@@ -119,7 +115,6 @@ struct DashboardView: View {
                                     .resizable()
                                     .scaledToFit()
                             }
-                        
                     }
                     .buttonStyle(.plain)
                 }
@@ -144,7 +139,6 @@ struct DashboardView: View {
             .sheet(isPresented: $isShowingHealthIntelligenceSheet) {
                 HealthIntelligenceView(store: healthIntelligenceStore)
             }
-            
         }.tint(isSteps ? .pink : .indigo)
     }
 }

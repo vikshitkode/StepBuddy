@@ -8,7 +8,6 @@
 import Foundation
 
 struct HealthMetric {
-    
     var identifier = UUID()
     var date: Date
     var value: Double

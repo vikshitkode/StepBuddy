@@ -75,14 +75,14 @@ struct StepBarChart: View {
     }
 
 
-    @ViewBuilder
-    private var chartView: some View {
+    @ViewBuilder private var chartView: some View {
         let selected = selectedHealthMetric
 
         if chartData.isEmpty {
             EmptyStateCard(
                 title: "No Step Data",
-                message: "Add Step entries in this App or enable Apple Health access to see your trends here.", color: .pink
+                message: "Add Step entries in this App or enable Apple Health access to see your trends here.",
+                color: .pink
             )
             .frame(maxWidth: .infinity, minHeight: 150)
         } else {
@@ -117,8 +117,10 @@ struct StepBarChart: View {
 
     private var annotationView: some View {
         VStack(alignment: .leading) {
-            Text(selectedHealthMetric?.date ?? .now,
-                 format: .dateTime.weekday(.abbreviated).month(.abbreviated).day())
+            Text(
+                selectedHealthMetric?.date ?? .now,
+                format: .dateTime.weekday(.abbreviated).month(.abbreviated).day()
+            )
                 .font(.footnote.bold())
                 .foregroundStyle(.secondary)
 
@@ -138,4 +140,3 @@ struct StepBarChart: View {
 #Preview {
     StepBarChart(selectedStat: .steps, chartData: MockData.steps)
 }
-

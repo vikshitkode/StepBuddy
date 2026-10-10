@@ -9,15 +9,14 @@ import SwiftUI
 import Charts
 
 struct WeightLineChart: View {
-    
     @State private var rawSelectedDate: Date?
     
     var selectedStat: HealthMetricContext
     var chartData: [HealthMetric]
     
     private var selectedHealthMetric: HealthMetric? {
-            guard !chartData.isEmpty, let rawSelectedDate else { return nil }
-            return chartData.first { Calendar.current.isDate(rawSelectedDate, inSameDayAs: $0.date) }
+        guard !chartData.isEmpty, let rawSelectedDate else { return nil }
+        return chartData.first { Calendar.current.isDate(rawSelectedDate, inSameDayAs: $0.date) }
     }
     
     var minValue: Double {
@@ -45,7 +44,8 @@ struct WeightLineChart: View {
             if chartData.isEmpty {
                 EmptyStateCard(
                     title: "No Weight Data",
-                    message: "Add weight entries in this App or enable Apple Health access to see your trends here.", color: .indigo
+                    message: "Add weight entries in this App or enable Apple Health access to see your trends here.",
+                    color: .indigo
                 )
                 .frame(maxWidth: .infinity, minHeight: 150)
             } else {
@@ -98,8 +98,10 @@ struct WeightLineChart: View {
     
     private var annotationView: some View {
         VStack(alignment: .leading) {
-            Text(selectedHealthMetric?.date ?? .now,
-                 format: .dateTime.weekday(.abbreviated).month(.abbreviated).day())
+            Text(
+                selectedHealthMetric?.date ?? .now,
+                format: .dateTime.weekday(.abbreviated).month(.abbreviated).day()
+            )
                 .font(.footnote.bold())
                 .foregroundStyle(.secondary)
 

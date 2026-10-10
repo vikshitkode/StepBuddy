@@ -9,8 +9,7 @@ import Foundation
 
 /// Turns the dashboard's health data into compact text the on-device model can reason over.
 /// Stats are precomputed here because the small on-device model is unreliable at arithmetic.
-struct HealthDataSummary {
-
+enum HealthDataSummary {
     static func hasData(steps: [HealthMetric], weights: [HealthMetric]) -> Bool {
         steps.contains { $0.value > 0 } || weights.contains { $0.value > 0 }
     }
@@ -64,7 +63,8 @@ struct HealthDataSummary {
             let recentAvg = average(of: lastWeek)
             let previousAvg = average(of: weekBefore)
             let change = (recentAvg - previousAvg) / previousAvg * 100
-            lines.append("Average of the last 7 days with data: \(format(recentAvg)) steps (\(signed(change, decimals: 0))% vs the 7 days with data before that: \(format(previousAvg)))")
+            let comparison = "\(signed(change, decimals: 0))% vs the 7 days with data before that: \(format(previousAvg))"
+            lines.append("Average of the last 7 days with data: \(format(recentAvg)) steps (\(comparison))")
         }
 
         let weekdayAverages = ChartMath.averageWeekdayCount(for: steps)
@@ -93,8 +93,8 @@ struct HealthDataSummary {
 
     private static func dailyLog(steps: [HealthMetric], weights: [HealthMetric]) -> [String] {
         let calendar = Calendar.current
-        let stepsByDay = Dictionary(steps.map { (calendar.startOfDay(for: $0.date), $0.value) }, uniquingKeysWith: { _, last in last })
-        let weightsByDay = Dictionary(weights.map { (calendar.startOfDay(for: $0.date), $0.value) }, uniquingKeysWith: { _, last in last })
+        let stepsByDay = Dictionary(steps.map { (calendar.startOfDay(for: $0.date), $0.value) }) { _, last in last }
+        let weightsByDay = Dictionary(weights.map { (calendar.startOfDay(for: $0.date), $0.value) }) { _, last in last }
         let days = Set(stepsByDay.keys).union(weightsByDay.keys).sorted()
 
         return days.map { day in
