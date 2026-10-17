@@ -214,7 +214,11 @@ private struct InsightsChatView: View {
                 .padding()
             }
             .scrollDismissesKeyboard(.interactively)
-            .onChange(of: insights.messages.last?.text) {
+            // Keeps the end of a streaming reply in view as it grows. Following every streamed token with
+            // onChange + scrollTo fired several times per frame, so SwiftUI dropped updates.
+            .defaultScrollAnchor(.bottom, for: .sizeChanges)
+            .onChange(of: insights.messages.count) {
+                // Brings a new question into view, e.g. when it's sent while scrolled up to the insight card
                 guard let last = insights.messages.last else { return }
                 withAnimation {
                     proxy.scrollTo(last.id, anchor: .bottom)
