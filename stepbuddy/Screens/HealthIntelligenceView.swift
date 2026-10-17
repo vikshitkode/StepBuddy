@@ -177,6 +177,9 @@ private struct InsightsChatView: View {
     let insights: HealthInsightsManager
 
     @State private var question = ""
+    @State private var speech = KokoroSpeechManager()
+    @State private var isShowingVoicePicker = false
+    @AppStorage(KokoroVoice.storageKey) private var voiceID = KokoroVoice.defaultID
     @FocusState private var isInputFocused: Bool
 
     private let suggestedQuestions = [
@@ -189,18 +192,30 @@ private struct InsightsChatView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    InsightCard(insight: insights.insight, isGenerating: insights.isGeneratingInsight)
+                    InsightCard(
+                        insight: insights.insight,
+                        isGenerating: insights.isGeneratingInsight,
+                        isSpeaking: speech.speakingID == Self.insightSpeechID,
+                        isPreparingSpeech: speech.isPreparing,
+                        onSpeak: canSpeak ? { speakInsight() } : nil
+                    )
 
                     if insights.messages.isEmpty {
                         suggestions
                     }
 
                     ForEach(insights.messages) { message in
-                        ChatBubble(message: message)
-                            .id(message.id)
+                        let speechID = message.id.uuidString
+                        ChatBubble(
+                            message: message,
+                            isSpeaking: speech.speakingID == speechID,
+                            isPreparingSpeech: speech.isPreparing,
+                            onSpeak: isComplete(message) ? { speech.toggle(message.text, id: speechID, voiceID: voiceID) } : nil
+                        )
+                        .id(message.id)
                     }
 
-                    if let errorMessage = insights.errorMessage {
+                    if let errorMessage = insights.errorMessage ?? speech.errorMessage {
                         Label(errorMessage, systemImage: "exclamationmark.triangle")
                             .font(.footnote)
                             .foregroundStyle(.orange)
@@ -224,9 +239,13 @@ private struct InsightsChatView: View {
         .safeAreaInset(edge: .bottom) {
             inputBar
         }
+        .onDisappear {
+            speech.stop()
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button {
+                    speech.stop()
                     insights.generateInsights()
                 } label: {
                     Image(systemName: "arrow.clockwise")
@@ -234,7 +253,44 @@ private struct InsightsChatView: View {
                 .disabled(insights.isGeneratingInsight)
                 .accessibilityLabel("Regenerate insights")
             }
+
+            if canSpeak {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        isShowingVoicePicker = true
+                    } label: {
+                        Image(systemName: "person.wave.2")
+                    }
+                    .accessibilityLabel("Read-aloud voice")
+                }
+            }
         }
+        .sheet(isPresented: $isShowingVoicePicker) {
+            KokoroVoicePickerSheet(speech: speech)
+                .presentationDetents([.medium, .large])
+        }
+    }
+
+    private static let insightSpeechID = "insight"
+
+    /// Kokoro needs a real device with the model files bundled (see CLAUDE.md).
+    private var canSpeak: Bool {
+        KokoroSpeechManager.availability == .available
+    }
+
+    /// Assistant replies can be read aloud once they have finished streaming.
+    private func isComplete(_ message: ChatMessage) -> Bool {
+        canSpeak
+            && message.role == .assistant
+            && !message.text.isEmpty
+            && !(insights.isResponding && message.id == insights.messages.last?.id)
+    }
+
+    private func speakInsight() {
+        let insight = insights.insight
+        let highlights: [String?] = insight?.highlights ?? []
+        let text = KokoroText.passage([insight?.summary] + highlights + [insight?.suggestion])
+        speech.toggle(text, id: Self.insightSpeechID, voiceID: voiceID)
     }
 
     private var suggestions: some View {
@@ -299,12 +355,24 @@ private struct InsightsChatView: View {
 private struct InsightCard: View {
     let insight: HealthInsight.PartiallyGenerated?
     let isGenerating: Bool
+    let isSpeaking: Bool
+    let isPreparingSpeech: Bool
+    /// Shows a read-aloud button once the insight is complete, when set.
+    let onSpeak: (() -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Your Insights", systemImage: "apple.intelligence")
-                .font(.title3.bold())
-                .foregroundStyle(LinearGradient.customGradientColor)
+            HStack {
+                Label("Your Insights", systemImage: "apple.intelligence")
+                    .font(.title3.bold())
+                    .foregroundStyle(LinearGradient.customGradientColor)
+
+                Spacer(minLength: 0)
+
+                if let onSpeak, !isGenerating, insight?.summary != nil {
+                    SpeakButton(isSpeaking: isSpeaking, isPreparing: isSpeaking && isPreparingSpeech, action: onSpeak)
+                }
+            }
 
             if let summary = insight?.summary {
                 Text(summary)
@@ -344,6 +412,10 @@ private struct InsightCard: View {
 
 private struct ChatBubble: View {
     let message: ChatMessage
+    var isSpeaking = false
+    var isPreparingSpeech = false
+    /// Shows a read-aloud button under the bubble when set.
+    var onSpeak: (() -> Void)?
 
     private var isUser: Bool { message.role == .user }
 
@@ -351,23 +423,33 @@ private struct ChatBubble: View {
         HStack {
             if isUser { Spacer(minLength: 40) }
 
-            Group {
-                if message.text.isEmpty {
-                    ThinkingIndicator()
-                } else {
-                    Text(message.text)
+            VStack(alignment: .leading, spacing: 4) {
+                bubble
+
+                if let onSpeak {
+                    SpeakButton(isSpeaking: isSpeaking, isPreparing: isSpeaking && isPreparingSpeech, action: onSpeak)
                 }
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .foregroundStyle(isUser ? .white : .primary)
-            .background(
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(isUser ? AnyShapeStyle(.pink) : AnyShapeStyle(Color(.secondarySystemBackground)))
-            )
 
             if !isUser { Spacer(minLength: 40) }
         }
+    }
+
+    private var bubble: some View {
+        Group {
+            if message.text.isEmpty {
+                ThinkingIndicator()
+            } else {
+                Text(message.text)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .foregroundStyle(isUser ? .white : .primary)
+        .background(
+            RoundedRectangle(cornerRadius: 18)
+                .fill(isUser ? AnyShapeStyle(.pink) : AnyShapeStyle(Color(.secondarySystemBackground)))
+        )
     }
 }
 
