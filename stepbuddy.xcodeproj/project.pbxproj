@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF84E99C3083037A00855145 /* KokoroSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BF84E99B3083037A00855145 /* KokoroSwift */; };
 		BFC7783A306069D100A6EA25 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = BFC77839306069D100A6EA25 /* Algorithms */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFC7783A306069D100A6EA25 /* Algorithms in Frameworks */,
+				BF84E99C3083037A00855145 /* KokoroSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +121,7 @@
 			name = stepbuddy;
 			packageProductDependencies = (
 				BFC77839306069D100A6EA25 /* Algorithms */,
+				BF84E99B3083037A00855145 /* KokoroSwift */,
 			);
 			productName = stepbuddy;
 			productReference = BF8CE8982DC4A06500D23F30 /* stepbuddy.app */;
@@ -154,6 +157,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BFC77838306069D100A6EA25 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				BF84E99A3083037A00855145 /* XCLocalSwiftPackageReference "Packages/KokoroSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF8CE8992DC4A06500D23F30 /* Products */;
@@ -472,6 +476,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		BF84E99A3083037A00855145 /* XCLocalSwiftPackageReference "Packages/KokoroSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/KokoroSwift;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		BFC77838306069D100A6EA25 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -484,6 +495,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BF84E99B3083037A00855145 /* KokoroSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BF84E99A3083037A00855145 /* XCLocalSwiftPackageReference "Packages/KokoroSwift" */;
+			productName = KokoroSwift;
+		};
 		BFC77839306069D100A6EA25 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BFC77838306069D100A6EA25 /* XCRemoteSwiftPackageReference "swift-algorithms" */;

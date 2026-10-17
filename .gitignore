@@ -89,3 +89,10 @@ fastlane/test_output
 
 iOSInjectionProject/
 .DS_Store
+
+# Kokoro TTS model (327 MB weights + voices), bundled only on local machines.
+# Without these files the app builds and Kokoro shows as unavailable. See CLAUDE.md.
+stepbuddy/Resources/Kokoro/
+
+# Lockfiles SwiftPM generates inside the vendored packages; the app's Package.resolved is the one that counts
+Packages/*/Package.resolved
